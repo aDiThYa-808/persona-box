@@ -1,5 +1,11 @@
-*node_modules
-*.svelte-kit
-*.env
-*.env.*
-*.DS_Store
+# frontend sveltekit
+/frontend/node_modules
+/frontend/.svelte-kit
+/fronend/.env
+/frontend/.env.*
+/frontend/.DS_Store
+
+# backend Go
+/backend/.env
+/backend/bootstrap
+/backend/function.zip
