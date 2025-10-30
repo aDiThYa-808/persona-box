@@ -31,9 +31,9 @@ func main() {
 	if !isLambda() {
 		log.Println("Server Running locally in port 3000...")
 		log.Fatal(http.ListenAndServe(":3000", handler))
+	} else {
+		adapter := httpadapter.New(handler)
+		lambda.Start(adapter.ProxyWithContext)
 	}
-
-	adapter := httpadapter.New(handler)
-	lambda.Start(adapter.ProxyWithContext)
 
 }
