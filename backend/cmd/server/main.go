@@ -25,14 +25,15 @@ func main() {
 	mux.Handle("/health", http.HandlerFunc(handlers.HealthHandler))
 
 	// add cors headers
-	handler := middlewares.WithCors(mux)
+	handler := middlewares.StripStagePrefix(mux)
+	handler = middlewares.WithCors(handler)
 
 	// local environment
 	if !isLambda() {
 		log.Println("Server Running locally in port 3000...")
 		log.Fatal(http.ListenAndServe(":3000", handler))
 	} else {
-		adapter := httpadapter.New(handler)
+		adapter := httpadapter.NewV2(handler)
 		lambda.Start(adapter.ProxyWithContext)
 	}
 
