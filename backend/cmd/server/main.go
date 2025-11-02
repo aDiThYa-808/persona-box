@@ -8,6 +8,8 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/awslabs/aws-lambda-go-api-proxy/httpadapter"
 
+	"github.com/joho/godotenv"
+
 	handlers "github.com/aDiThYa-808/persona-box/internal/handlers"
 	middlewares "github.com/aDiThYa-808/persona-box/internal/middlewares"
 )
@@ -17,6 +19,12 @@ func isLambda() bool {
 	// Check for an aws env which will not be present locally.
 	_, exists := os.LookupEnv("AWS_LAMBDA_FUNCTION_NAME")
 	return exists
+}
+
+func init() {
+	if err := godotenv.Load(); err != nil {
+		log.Println("env not found.")
+	}
 }
 
 func main() {
