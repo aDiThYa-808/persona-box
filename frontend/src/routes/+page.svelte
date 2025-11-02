@@ -3,7 +3,7 @@
     let responseText = ""
 
     async function serverHealthCheck(){
-        const response = await fetch("http://localhost:3000/health")
+        const response = await fetch("https://0m6lq7o0ne.execute-api.eu-north-1.amazonaws.com/health")
         const text = await response.text()
         responseText = text
     }
