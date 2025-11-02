@@ -23,6 +23,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.Handle("/health", http.HandlerFunc(handlers.HealthHandler))
+	mux.Handle("/chat", http.HandlerFunc(handlers.ChatHandler))
 
 	// add cors headers
 	handler := middlewares.StripStagePrefix(mux)
