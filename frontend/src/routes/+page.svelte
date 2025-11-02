@@ -1,9 +1,13 @@
 <script lang="ts">
+    import {PUBLIC_AWS_INVOKE_URL} from "$env/static/public"
+
+    const apiBaseUrl = PUBLIC_AWS_INVOKE_URL
+
     const pageName = "home"
     let responseText = ""
 
     async function serverHealthCheck(){
-        const response = await fetch("https://0m6lq7o0ne.execute-api.eu-north-1.amazonaws.com/health")
+        const response = await fetch(`${apiBaseUrl}/health`)
         const text = await response.text()
         responseText = text
     }
