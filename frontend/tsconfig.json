@@ -1,5 +1,12 @@
 {
 	"extends": "./.svelte-kit/tsconfig.json",
+	"include": [
+  		"src",
+  		".svelte-kit/ambient.d.ts",
+		".svelte-kit/non-ambient.d.ts",
+  		".svelte-kit/generated/*",
+  		"global.d.ts"
+	],
 	"compilerOptions": {
 		"allowJs": true,
 		"checkJs": true,
