@@ -30,6 +30,7 @@ func init() {
 func main() {
 	mux := http.NewServeMux()
 
+	mux.Handle("/auth/google", http.HandlerFunc(handlers.GoogleAuthHandler))
 	mux.Handle("/health", http.HandlerFunc(handlers.HealthHandler))
 	mux.Handle("/chat", http.HandlerFunc(handlers.ChatHandler))
 
