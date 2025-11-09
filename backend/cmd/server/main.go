@@ -42,7 +42,9 @@ func init() {
 func main() {
 	mux := http.NewServeMux()
 
-	mux.Handle("/auth/google", http.HandlerFunc(handlers.GoogleAuthHandler))
+	h := handlers.New(googleJWKS)
+
+	mux.Handle("/auth/google", http.HandlerFunc(h.GoogleAuthHandler))
 	mux.Handle("/health", http.HandlerFunc(handlers.HealthHandler))
 	mux.Handle("/chat", http.HandlerFunc(handlers.ChatHandler))
 
