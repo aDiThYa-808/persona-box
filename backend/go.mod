@@ -1,6 +1,8 @@
 module github.com/aDiThYa-808/persona-box
 
-go 1.22.2
+go 1.24.0
+
+toolchain go1.24.10
 
 require (
 	github.com/aws/aws-lambda-go v1.50.0
@@ -10,6 +12,9 @@ require (
 )
 
 require (
+	github.com/MicahParks/keyfunc v1.9.0 // indirect
+	github.com/golang-jwt/jwt/v4 v4.4.2 // indirect
+	github.com/golang-jwt/jwt/v5 v5.3.0 // indirect
 	github.com/tidwall/gjson v1.14.4 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
