@@ -1,11 +1,11 @@
 # frontend sveltekit
-/frontend/node_modules
-/frontend/.svelte-kit
-/frontend/.DS_Store
+/client/node_modules
+/client/.svelte-kit
+/client/.DS_Store
 
 # backend Go
-/backend/bootstrap
-/backend/function.zip
+/server/bootstrap
+/server/function.zip
 
 # shared
 *.env
