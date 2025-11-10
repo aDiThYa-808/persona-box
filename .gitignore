@@ -10,3 +10,4 @@
 # shared
 *.env
 *.env.*
+!*.env.example
