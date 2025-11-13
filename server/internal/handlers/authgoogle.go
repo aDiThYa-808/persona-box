@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"slices"
 	"time"
 
 	"github.com/MicahParks/keyfunc"
@@ -57,6 +58,11 @@ func (h *handler) GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if token.Method.Alg() != "RS256" {
+		httpx.WriteJSONError(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
 	if !token.Valid {
 		httpx.WriteJSONError(w, "Unauthorized", http.StatusUnauthorized)
 		log.Println("Token not valid")
@@ -77,10 +83,8 @@ func (h *handler) GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 // helpers
 func isAudienceValid(audience jwt.ClaimStrings) error {
 	clientId := os.Getenv("GOOGLE_CLIENT_ID")
-	for _, a := range audience {
-		if a == clientId {
-			return nil
-		}
+	if slices.Contains(audience, clientId) {
+		return nil
 	}
 	return errors.New("invalid audience")
 }
