@@ -75,16 +75,14 @@ func (h *handler) GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // helpers
-func isAudienceValid(Audience jwt.ClaimStrings) bool {
-	audValid := false
+func isAudienceValid(audience jwt.ClaimStrings) error {
 	clientId := os.Getenv("GOOGLE_CLIENT_ID")
-	for _, a := range Audience {
+	for _, a := range audience {
 		if a == clientId {
-			audValid = true
-			break
+			return nil
 		}
 	}
-	return audValid
+	return errors.New("invalid audience")
 }
 
 func verifyClaims(claims *googleClaims) error {
@@ -92,8 +90,8 @@ func verifyClaims(claims *googleClaims) error {
 		return errors.New("email not verified")
 	}
 
-	if !isAudienceValid(claims.Audience) {
-		return errors.New("invalid audience")
+	if audErr := isAudienceValid(claims.Audience); audErr != nil {
+		return audErr
 	}
 
 	if claims.Issuer != "https://accounts.google.com" && claims.Issuer != "accounts.google.com" {
