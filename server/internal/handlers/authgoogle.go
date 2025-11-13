@@ -58,7 +58,7 @@ func (h *handler) GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if token.Method.Alg() != "RS256" {
+	if _, methodOk := token.Method.(*jwt.SigningMethodRSA); !methodOk {
 		httpx.WriteJSONError(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
