@@ -24,8 +24,9 @@ type authRequest struct {
 }
 
 type authResponse struct {
-	Token string `json:"token"`
-	Email string `json:"email"`
+	Sub         string `json:"sub"`
+	AccessToken string `json:"token"`
+	Email       string `json:"email"`
 }
 
 type googleClaims struct {
@@ -59,18 +60,24 @@ func (h *handler) GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
+	if h.JWKS == nil {
+		httpx.WriteJSONError(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
 	claims := &googleClaims{}
 
 	token, parseErr := jwt.ParseWithClaims(authReq.IdToken, claims, h.JWKS.Keyfunc, jwt.WithValidMethods([]string{"RS256"}))
 
 	if parseErr != nil || token == nil {
 		httpx.WriteJSONError(w, "Unauthorized", http.StatusUnauthorized)
-		log.Println("ParseWithClaims returns error or token = nil.")
+		log.Println("ParseWithClaims returns error or token = nil")
 		return
 	}
 
 	if _, methodOk := token.Method.(*jwt.SigningMethodRSA); !methodOk {
 		httpx.WriteJSONError(w, "Unauthorized", http.StatusUnauthorized)
+		log.Println("signing method does not belong to RSA family")
 		return
 	}
 
@@ -99,20 +106,28 @@ func (h *handler) GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	newToken := jwt.NewWithClaims(jwt.SigningMethodHS256, tc)
 	signingKey := os.Getenv("PERSONABOX_SECRET")
+
+	if signingKey == "" {
+		httpx.WriteJSONError(w, "Internal server error", http.StatusInternalServerError)
+		log.Println("signingKey env not found")
+		return
+	}
+
 	signedToken, tokenErr := newToken.SignedString([]byte(signingKey))
 
 	if tokenErr != nil {
 		httpx.WriteJSONError(w, "Internal server error", http.StatusInternalServerError)
+		log.Println("error occured while creating signed jwt for the client")
 		return
 	}
 
 	authRes := authResponse{
-		Token: signedToken,
-		Email: claims.Email,
+		Sub:         claims.Sub,
+		AccessToken: signedToken,
+		Email:       claims.Email,
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(authRes)
+	httpx.WriteJSONSuccess(w, authRes)
 }
 
 // helpers
@@ -137,8 +152,16 @@ func verifyClaims(claims *googleClaims) error {
 		return errors.New("invalid issuer")
 	}
 
-	if claims.ExpiresAt == nil || claims.ExpiresAt.Time.Before(time.Now()) {
+	if claims.Sub == "" {
+		return errors.New("sub not found")
+	}
+
+	if claims.ExpiresAt == nil || time.Now().After(claims.ExpiresAt.Time.Add(30*time.Second)) {
 		return errors.New("token expired")
+	}
+
+	if claims.IssuedAt == nil || claims.IssuedAt.Time.After(time.Now().Add(30*time.Second)) {
+		return errors.New("invalid issue date")
 	}
 
 	return nil
