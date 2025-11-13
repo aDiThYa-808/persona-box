@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"os"
@@ -17,13 +18,20 @@ type handler struct {
 	JWKS *keyfunc.JWKS
 }
 
+type authRequest struct {
+	IdToken string `json:"id_token"`
+}
+
+type googleClaims struct {
+	Sub           string `json:"sub"`
+	Email         string `json:"email"`
+	EmailVerified bool   `json:"email_verified"`
+	jwt.RegisteredClaims
+}
+
 // constructor for dependency injection
 func New(jwks *keyfunc.JWKS) *handler {
 	return &handler{JWKS: jwks}
-}
-
-type authRequest struct {
-	IdToken string `json:"id_token"`
 }
 
 func (h *handler) GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
@@ -39,7 +47,7 @@ func (h *handler) GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
-	claims := &jwt.RegisteredClaims{}
+	claims := &googleClaims{}
 
 	token, parseErr := jwt.ParseWithClaims(authReq.IdToken, claims, h.JWKS.Keyfunc)
 
@@ -55,9 +63,10 @@ func (h *handler) GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !verifyClaims(claims) {
+	verifyErr := verifyClaims(claims)
+	if verifyErr != nil {
 		httpx.WriteJSONError(w, "Unauthorized", http.StatusUnauthorized)
-		log.Println("Invalid Audience, Issuer or ExpiresAt")
+		log.Println(verifyErr.Error())
 		return
 	}
 
@@ -78,18 +87,22 @@ func isAudienceValid(Audience jwt.ClaimStrings) bool {
 	return audValid
 }
 
-func verifyClaims(claims *jwt.RegisteredClaims) bool {
+func verifyClaims(claims *googleClaims) error {
+	if !claims.EmailVerified {
+		return errors.New("email not verified")
+	}
+
 	if !isAudienceValid(claims.Audience) {
-		return false
+		return errors.New("invalid audience")
 	}
 
 	if claims.Issuer != "https://accounts.google.com" && claims.Issuer != "accounts.google.com" {
-		return false
+		return errors.New("invalid issuer")
 	}
 
 	if claims.ExpiresAt == nil || claims.ExpiresAt.Time.Before(time.Now()) {
-		return false
+		return errors.New("token expired")
 	}
 
-	return true
+	return nil
 }
