@@ -1,24 +1,22 @@
 package auth
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
+	"strings"
 )
 
-type request struct {
-	IdToken string `json:"id_token"`
-}
-
 func extractToken(r *http.Request) (string, error) {
-	var req request
-	decodeErr := json.NewDecoder(r.Body).Decode(&req)
-
-	if decodeErr != nil {
-		return "", errors.New("could not find id_token")
+	header := r.Header.Get("Authorization")
+	if header == "" {
+		return "", errors.New("authorization header missing")
 	}
 
-	defer r.Body.Close()
+	token, exists := strings.CutPrefix(header, "Bearer ")
 
-	return req.IdToken, nil
+	if !exists || token == "" {
+		return "", errors.New("invalid authorization header")
+	}
+
+	return token, nil
 }
