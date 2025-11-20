@@ -25,7 +25,7 @@ type authRequest struct {
 
 type authResponse struct {
 	Sub         string `json:"sub"`
-	AccessToken string `json:"token"`
+	AccessToken string `json:"access_token"`
 	Email       string `json:"email"`
 }
 
