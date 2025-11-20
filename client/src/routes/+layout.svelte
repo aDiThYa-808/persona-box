@@ -10,8 +10,7 @@
 </svelte:head>
 
 <nav>
-	<a href="/">Home</a>
-	<a href="/dashboard">Dashboard</a>
+	<a href='/login'>Login</a>
 </nav>
 
 {@render children?.()}
