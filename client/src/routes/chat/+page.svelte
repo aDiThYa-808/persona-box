@@ -54,7 +54,7 @@
 
 <div class="flex flex-col h-screen bg-[#0E0E0F] text-gray-100">
   <div class="flex-1 overflow-y-auto px-6 py-8 space-y-4">
-    {#each messages as msg}
+    {#each messages as msg, i (i)}
       <div class="flex {msg.role === 'user' ? 'justify-end' : 'justify-start'}">
         <div
           class={`max-w-[75%] px-4 py-2 rounded-2xl text-sm leading-relaxed ${
