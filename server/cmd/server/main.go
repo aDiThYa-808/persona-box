@@ -26,9 +26,12 @@ var (
 )
 
 func init() {
-	//load ENV
-	if loadErr := godotenv.Load(); loadErr != nil {
-		log.Fatal("env not found." + loadErr.Error())
+
+	//load ENV in local environment
+	if !isLambda() {
+		if loadErr := godotenv.Load(); loadErr != nil {
+			log.Fatal("env not found." + loadErr.Error())
+		}
 	}
 
 	// Fetch and hold google's JWKS for verification
