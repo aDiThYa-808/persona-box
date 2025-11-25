@@ -1,10 +1,9 @@
 <script lang="ts">
     import { PUBLIC_GOOGLE_CLIENT_ID } from "$env/static/public";
-    import {PUBLIC_AWS_INVOKE_URL} from "$env/static/public"
     import { onMount } from "svelte";
 
     const clientId = PUBLIC_GOOGLE_CLIENT_ID
-    const invokeURL = PUBLIC_AWS_INVOKE_URL
+    const baseURL = "http://localhost:5173"
 
     onMount(()=>{
         window.google.accounts.id.initialize({
@@ -25,7 +24,8 @@
 
     async function verifyJWT(jwt: string){
         try{
-            const response = await fetch(`${invokeURL}/auth/google`,{
+
+            const response = await fetch(`${baseURL}/api/auth/login`,{
                 method:'POST',
                 headers: {
                     'Content-Type':'application/json'
@@ -52,10 +52,5 @@
     }
 
 </script>
-
-<svelte:head>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-</svelte:head>
-
 
 <div id="googleSignIn"></div>
