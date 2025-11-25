@@ -1,2 +1,8 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
+
+@layer base{
+    html,body{
+        @apply bg-[#0f0f0f] text-white;
+    }
+}
