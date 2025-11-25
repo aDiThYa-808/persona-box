@@ -53,4 +53,9 @@
 
 </script>
 
-<div id="googleSignIn"></div>
+<main class="min-h-screen flex items-center justify-center bg-[#0f0f0f] text-white">
+    <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-8 w-[280px] text-center">
+        <h1 class="text-xl font-medium mb-6">Login</h1>
+        <div id="googleSignIn" class="flex justify-center"></div>
+    </div>
+</main>
