@@ -37,16 +37,16 @@
                 })
             })
 
-            const data = await response.json()
+            // const data = await response.json()
 
-            if(!response.ok){
-                throw new Error(`Authentication failed : ${data.error}`)
-            }
+            // if(!response.ok){
+            //     throw new Error(`Authentication failed : ${data.error}`)
+            // }
 
-            console.log("JWT verified successfully. Authentication complete")
-            console.log(data.sub)
-            console.log(data.access_token)
-            console.log(data.email)
+            // console.log("JWT verified successfully. Authentication complete")
+            // console.log(data.sub)
+            // console.log(data.access_token)
+            // console.log(data.email)
 
         }catch(err:unknown){
             console.log((err as Error).message)
