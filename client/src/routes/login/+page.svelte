@@ -1,9 +1,11 @@
 <script lang="ts">
     import { PUBLIC_GOOGLE_CLIENT_ID } from "$env/static/public";
+    import {PUBLIC_BASE_URL} from "$env/static/public";
     import { onMount } from "svelte";
 
     const clientId = PUBLIC_GOOGLE_CLIENT_ID
-    const baseURL = "http://localhost:5173"
+    const baseURL = PUBLIC_BASE_URL
+    //const baseURL = "http://localhost:5173"
 
     onMount(()=>{
         window.google.accounts.id.initialize({
@@ -53,7 +55,7 @@
 
 </script>
 
-<main class="min-h-screen flex items-center justify-center bg-[#0f0f0f] text-white">
+<main class="min-h-screen flex items-center justify-center text-white">
     <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-8 w-[280px] text-center">
         <h1 class="text-xl font-medium mb-6">Login</h1>
         <div id="googleSignIn" class="flex justify-center"></div>
