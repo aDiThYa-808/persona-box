@@ -1,9 +1,11 @@
 import type { RequestEvent } from "@sveltejs/kit";
-import { error, isHttpError } from "@sveltejs/kit";
+import { error, isHttpError, redirect } from "@sveltejs/kit";
 import { PUBLIC_AWS_INVOKE_URL } from "$env/static/public";
+import { PUBLIC_ENVIRONMENT } from "$env/static/public";
 
 export async function POST(event: RequestEvent) {
     try{
+        const prodEnv = PUBLIC_ENVIRONMENT
         const invokeURL = PUBLIC_AWS_INVOKE_URL 
 
         const body = await event.request.json()
@@ -38,7 +40,24 @@ export async function POST(event: RequestEvent) {
             throw error(res.status, 'Internal Server Error')
         }
 
-        return new Response(JSON.stringify(data),{status:200})
+        let secure = true
+        if(prodEnv.toLowerCase() == 'local'){
+            secure = false
+        }
+
+        event.cookies.set(
+            'pb_access_token',
+            data.access_token,
+            {
+                httpOnly:true,
+                secure: secure,
+                path:'/',
+                maxAge:7*24*60*60, // 7 days
+                sameSite:"lax"
+            }
+        )
+
+        return new Response(JSON.stringify({success:true}),{status:200})
 
     }catch(err:unknown){
         if(isHttpError(err)){
