@@ -1,11 +1,13 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
     import { PUBLIC_GOOGLE_CLIENT_ID } from "$env/static/public";
     import {PUBLIC_BASE_URL} from "$env/static/public";
+    import {PUBLIC_ENVIRONMENT} from "$env/static/public"
+	import { error, redirect } from "@sveltejs/kit";
     import { onMount } from "svelte";
 
     const clientId = PUBLIC_GOOGLE_CLIENT_ID
-    const baseURL = PUBLIC_BASE_URL
-    //const baseURL = "http://localhost:5173"
+    const baseURL = (PUBLIC_ENVIRONMENT.toLowerCase() == "local")? 'http://localhost:5173' : PUBLIC_BASE_URL
 
     onMount(()=>{
         window.google.accounts.id.initialize({
@@ -37,16 +39,14 @@
                 })
             })
 
-            // const data = await response.json()
+           if(!response.ok){
+            throw error(500,'Login failed')
+           }
 
-            // if(!response.ok){
-            //     throw new Error(`Authentication failed : ${data.error}`)
-            // }
-
-            // console.log("JWT verified successfully. Authentication complete")
-            // console.log(data.sub)
-            // console.log(data.access_token)
-            // console.log(data.email)
+           await goto('/dashboard',{
+            replaceState:true,
+            noScroll:false
+           })
 
         }catch(err:unknown){
             console.log((err as Error).message)
