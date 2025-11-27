@@ -1,7 +1,6 @@
 import { error, type Handle } from '@sveltejs/kit';
 import { jwtVerify } from 'jose';
 import { PERSONABOX_SECRET } from '$env/static/private';
-import { JWTExpired } from 'jose/errors';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	try {
