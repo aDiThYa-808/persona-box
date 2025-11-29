@@ -3,7 +3,7 @@
     import { PUBLIC_GOOGLE_CLIENT_ID } from "$env/static/public";
     import {PUBLIC_BASE_URL} from "$env/static/public";
     import {PUBLIC_ENVIRONMENT} from "$env/static/public"
-	import { error, redirect } from "@sveltejs/kit";
+	import { error} from "@sveltejs/kit";
     import { onMount } from "svelte";
 
     const clientId = PUBLIC_GOOGLE_CLIENT_ID
