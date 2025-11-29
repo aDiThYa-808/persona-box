@@ -24,9 +24,7 @@ type authRequest struct {
 }
 
 type authResponse struct {
-	Sub         string `json:"sub"`
 	AccessToken string `json:"access_token"`
-	Email       string `json:"email"`
 }
 
 type googleClaims struct {
@@ -122,9 +120,7 @@ func (h *handler) GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	authRes := authResponse{
-		Sub:         claims.Sub,
 		AccessToken: signedToken,
-		Email:       claims.Email,
 	}
 
 	httpx.WriteJSONSuccess(w, authRes)
