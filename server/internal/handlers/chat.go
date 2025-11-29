@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/aDiThYa-808/persona-box/internal/auth"
 	"github.com/aDiThYa-808/persona-box/internal/httpx"
 
 	"github.com/openai/openai-go/v3"
@@ -18,6 +19,12 @@ type ChatRequest struct {
 }
 
 func ChatHandler(w http.ResponseWriter, r *http.Request) {
+
+	_, validateErr := auth.ValidateRequest(r)
+	if validateErr != nil {
+		httpx.WriteJSONError(w, validateErr.Error(), http.StatusUnauthorized)
+	}
+
 	var req ChatRequest
 	decodeErr := json.NewDecoder(r.Body).Decode(&req)
 
