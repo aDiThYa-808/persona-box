@@ -1,5 +1,5 @@
 import type { RequestEvent } from "@sveltejs/kit";
-import { error, isHttpError, redirect } from "@sveltejs/kit";
+import { error, isHttpError} from "@sveltejs/kit";
 import { PUBLIC_AWS_INVOKE_URL } from "$env/static/public";
 import { PUBLIC_ENVIRONMENT } from "$env/static/public";
 
