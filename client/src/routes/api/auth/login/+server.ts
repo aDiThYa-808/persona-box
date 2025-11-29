@@ -36,7 +36,7 @@ export async function POST(event: RequestEvent) {
             throw error(res.status,'Unauthorized')
         }
 
-        if(!data.sub || !data.access_token || !data.email){
+        if(!data.access_token){
             throw error(res.status, 'Internal Server Error')
         }
 
@@ -59,7 +59,7 @@ export async function POST(event: RequestEvent) {
 
         return new Response(JSON.stringify({success:true}),{status:200})
 
-    }catch(err:unknown){
+    }catch(err){
         if(isHttpError(err)){
             throw err
         }
