@@ -1,8 +1,7 @@
-package auth
+package jwtx
 
 import (
 	"errors"
-	"net/http"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -14,12 +13,7 @@ type JWTClaims struct {
 	jwt.RegisteredClaims
 }
 
-func ValidateRequest(r *http.Request) (JWTClaims, error) {
-	idToken, extractErr := extractToken(r)
-
-	if extractErr != nil || idToken == "" {
-		return JWTClaims{}, extractErr
-	}
+func ValidateRequest(idToken string) (JWTClaims, error) {
 
 	claims := &JWTClaims{}
 	token, parseErr := jwt.ParseWithClaims(idToken, claims, keyFunc, jwt.WithValidMethods([]string{"HS256"}))
