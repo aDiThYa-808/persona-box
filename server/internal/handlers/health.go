@@ -8,12 +8,12 @@ import (
 )
 
 func HealthHandler(w http.ResponseWriter, r *http.Request) {
-	idToken, extractErr := httpx.ExtractToken(r)
+	accessToken, extractErr := httpx.ExtractToken(r)
 	if extractErr != nil {
 		httpx.WriteJSONError(w, extractErr.Error(), http.StatusBadRequest)
 	}
 
-	claims, validateErr := jwtx.ValidateRequest(idToken)
+	claims, validateErr := jwtx.ValidateAccessToken(accessToken)
 	if validateErr != nil {
 		httpx.WriteJSONError(w, "unauthorized", http.StatusUnauthorized)
 		return
