@@ -3,12 +3,17 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/aDiThYa-808/persona-box/internal/auth"
 	"github.com/aDiThYa-808/persona-box/internal/httpx"
+	"github.com/aDiThYa-808/persona-box/internal/jwtx"
 )
 
 func HealthHandler(w http.ResponseWriter, r *http.Request) {
-	claims, validateErr := auth.ValidateRequest(r)
+	idToken, extractErr := httpx.ExtractToken(r)
+	if extractErr != nil {
+		httpx.WriteJSONError(w, extractErr.Error(), http.StatusBadRequest)
+	}
+
+	claims, validateErr := jwtx.ValidateRequest(idToken)
 	if validateErr != nil {
 		httpx.WriteJSONError(w, "unauthorized", http.StatusUnauthorized)
 		return
