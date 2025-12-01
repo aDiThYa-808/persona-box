@@ -13,6 +13,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 
 	"github.com/aDiThYa-808/persona-box/internal/httpx"
+	"github.com/aDiThYa-808/persona-box/internal/jwtx"
 )
 
 type handler struct {
@@ -34,7 +35,7 @@ type googleClaims struct {
 	jwt.RegisteredClaims
 }
 
-type tokenClaims struct {
+type accessTokenClaims struct {
 	Sub   string `json:"sub"`
 	Email string `json:"email"`
 	jwt.RegisteredClaims
@@ -92,7 +93,7 @@ func (h *handler) GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tc := tokenClaims{
+	tc := accessTokenClaims{
 		Sub:   claims.Sub,
 		Email: claims.Email,
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -102,21 +103,13 @@ func (h *handler) GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	newToken := jwt.NewWithClaims(jwt.SigningMethodHS256, tc)
 	signingKey := os.Getenv("PERSONABOX_SECRET")
 
-	if signingKey == "" {
-		httpx.WriteJSONError(w, "Internal server error", http.StatusInternalServerError)
-		log.Println("signingKey env not found")
-		return
-	}
-
-	signedToken, tokenErr := newToken.SignedString([]byte(signingKey))
-
+	// GenerateAccessToken() method checks if signingKey != "". Returns signed token
+	signedToken, tokenErr := jwtx.GenerateAccessToken(signingKey, tc)
 	if tokenErr != nil {
-		httpx.WriteJSONError(w, "Internal server error", http.StatusInternalServerError)
-		log.Println("error occured while creating signed jwt for the client")
-		return
+		httpx.WriteJSONError(w, "Internal Server Error", http.StatusInternalServerError)
+		log.Println(tokenErr.Error())
 	}
 
 	authRes := authResponse{
