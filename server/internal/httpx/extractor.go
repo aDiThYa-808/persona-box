@@ -12,11 +12,11 @@ func ExtractToken(r *http.Request) (string, error) {
 		return "", errors.New("authorization header missing")
 	}
 
-	token, exists := strings.CutPrefix(header, "Bearer ")
+	accessToken, exists := strings.CutPrefix(header, "Bearer ")
 
-	if !exists || token == "" {
+	if !exists || accessToken == "" {
 		return "", errors.New("invalid authorization header")
 	}
 
-	return token, nil
+	return accessToken, nil
 }
