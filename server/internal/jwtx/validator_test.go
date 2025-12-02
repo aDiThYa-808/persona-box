@@ -10,12 +10,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-type accessTokenClaims struct {
-	Sub   string `json:"sub"`
-	Email string `json:"email"`
-	jwt.RegisteredClaims
-}
-
 func init() {
 	// use the real signing key for testing.
 	loadErr := godotenv.Load("../../.env")
