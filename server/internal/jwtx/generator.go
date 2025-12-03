@@ -1,6 +1,7 @@
 /*
-contains function to generate JWTs
+generator.go contains function to generate access token
 */
+
 package jwtx
 
 import (
