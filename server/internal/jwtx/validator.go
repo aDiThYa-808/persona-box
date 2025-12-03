@@ -1,7 +1,7 @@
 /*
-contains function to validate access token.
-called inside handlers to validate incoming requests.
+validator.go contains functions to validate tokens.
 */
+
 package jwtx
 
 import (
@@ -32,4 +32,19 @@ func ValidateAccessToken(accessToken string) (AccessTokenClaims, error) {
 	}
 
 	return *claims, nil
+}
+
+// Parses idToken and populates the claims struct.
+func ParseGoogleJWT(idToken string, claims *GoogleClaims, keyFunc jwt.Keyfunc) (*jwt.Token, error) {
+	token, parseErr := jwt.ParseWithClaims(idToken, claims, keyFunc, jwt.WithValidMethods([]string{"RS256"}))
+	if parseErr != nil || token == nil {
+		return nil, errors.New("couldnt parse id token")
+	}
+	if _, methodOk := token.Method.(*jwt.SigningMethodRSA); !methodOk {
+		return nil, errors.New("invalid signing method")
+	}
+	if !token.Valid {
+		return nil, errors.New("token is invalid")
+	}
+	return token, nil
 }

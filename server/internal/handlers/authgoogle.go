@@ -2,11 +2,9 @@ package handlers
 
 import (
 	"encoding/json"
-	"errors"
 	"log"
 	"net/http"
 	"os"
-	"slices"
 	"time"
 
 	"github.com/MicahParks/keyfunc"
@@ -53,31 +51,17 @@ func (h *handler) GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	claims := &jwtx.GoogleClaims{}
 
-	token, parseErr := jwt.ParseWithClaims(authReq.IdToken, claims, h.JWKS.Keyfunc, jwt.WithValidMethods([]string{"RS256"}))
+	_, parseErr := jwtx.ParseGoogleJWT(authReq.IdToken, claims, h.JWKS.Keyfunc)
 
-	if parseErr != nil || token == nil {
+	if parseErr != nil {
+		log.Println(parseErr.Error())
 		httpx.WriteJSONError(w, "Unauthorized", http.StatusUnauthorized)
-		log.Println("ParseWithClaims returns error or token = nil")
-		return
 	}
 
-	if _, methodOk := token.Method.(*jwt.SigningMethodRSA); !methodOk {
-		httpx.WriteJSONError(w, "Unauthorized", http.StatusUnauthorized)
-		log.Println("signing method does not belong to RSA family")
-		return
-	}
-
-	if !token.Valid {
-		httpx.WriteJSONError(w, "Unauthorized", http.StatusUnauthorized)
-		log.Println("Token not valid")
-		return
-	}
-
-	verifyErr := verifyClaims(claims)
+	verifyErr := jwtx.VerifyGoogleClaims(claims)
 	if verifyErr != nil {
-		httpx.WriteJSONError(w, "Unauthorized", http.StatusUnauthorized)
 		log.Println(verifyErr.Error())
-		return
+		httpx.WriteJSONError(w, "Unauthorized", http.StatusUnauthorized)
 	}
 
 	tc := jwtx.AccessTokenClaims{
@@ -95,8 +79,8 @@ func (h *handler) GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 	// GenerateAccessToken() method checks if signingKey != "". Returns signed token
 	signedToken, tokenErr := jwtx.GenerateAccessToken(signingKey, tc)
 	if tokenErr != nil {
-		httpx.WriteJSONError(w, "Internal Server Error", http.StatusInternalServerError)
 		log.Println(tokenErr.Error())
+		httpx.WriteJSONError(w, "Internal Server Error", http.StatusInternalServerError)
 	}
 
 	authRes := authResponse{
@@ -104,41 +88,4 @@ func (h *handler) GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	httpx.WriteJSONSuccess(w, authRes)
-}
-
-// helpers
-func isAudienceValid(audience jwt.ClaimStrings) error {
-	clientId := os.Getenv("GOOGLE_CLIENT_ID")
-	if slices.Contains(audience, clientId) {
-		return nil
-	}
-	return errors.New("invalid audience")
-}
-
-func verifyClaims(claims *jwtx.GoogleClaims) error {
-	if !claims.EmailVerified {
-		return errors.New("email not verified")
-	}
-
-	if audErr := isAudienceValid(claims.Audience); audErr != nil {
-		return audErr
-	}
-
-	if claims.Issuer != "https://accounts.google.com" && claims.Issuer != "accounts.google.com" {
-		return errors.New("invalid issuer")
-	}
-
-	if claims.Sub == "" {
-		return errors.New("sub not found")
-	}
-
-	if claims.ExpiresAt == nil || time.Now().After(claims.ExpiresAt.Time.Add(30*time.Second)) {
-		return errors.New("token expired")
-	}
-
-	if claims.IssuedAt == nil || claims.IssuedAt.Time.After(time.Now().Add(30*time.Second)) {
-		return errors.New("invalid issue date")
-	}
-
-	return nil
 }
