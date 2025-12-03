@@ -1,3 +1,6 @@
+/*
+contains function to generate JWTs
+*/
 package jwtx
 
 import (
@@ -6,6 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
+// Uses the provided signing key and claims to create a JWT string. Returns error if the process failed.
 func GenerateAccessToken(signingKey string, claims jwt.Claims) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
