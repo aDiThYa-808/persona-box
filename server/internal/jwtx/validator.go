@@ -1,3 +1,7 @@
+/*
+contains function to validate access token.
+called inside handlers to validate incoming requests.
+*/
 package jwtx
 
 import (
@@ -12,6 +16,7 @@ type JWTClaims struct {
 	jwt.RegisteredClaims
 }
 
+// verifies the provided access token and returns parsed claims(type JWTClaims) or an error if the token is invalid.
 func ValidateAccessToken(accessToken string) (JWTClaims, error) {
 
 	claims := &JWTClaims{}
