@@ -28,13 +28,6 @@ type authResponse struct {
 	AccessToken string `json:"access_token"`
 }
 
-type googleClaims struct {
-	Sub           string `json:"sub"`
-	Email         string `json:"email"`
-	EmailVerified bool   `json:"email_verified"`
-	jwt.RegisteredClaims
-}
-
 // constructor for dependency injection
 func New(jwks *keyfunc.JWKS) *handler {
 	return &handler{JWKS: jwks}
@@ -58,7 +51,7 @@ func (h *handler) GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	claims := &googleClaims{}
+	claims := &jwtx.GoogleClaims{}
 
 	token, parseErr := jwt.ParseWithClaims(authReq.IdToken, claims, h.JWKS.Keyfunc, jwt.WithValidMethods([]string{"RS256"}))
 
@@ -122,7 +115,7 @@ func isAudienceValid(audience jwt.ClaimStrings) error {
 	return errors.New("invalid audience")
 }
 
-func verifyClaims(claims *googleClaims) error {
+func verifyClaims(claims *jwtx.GoogleClaims) error {
 	if !claims.EmailVerified {
 		return errors.New("email not verified")
 	}
