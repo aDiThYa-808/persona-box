@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func verifyClaims(claims JWTClaims) error {
+func verifyClaims(claims AccessTokenClaims) error {
 	if claims.Sub == "" {
 		return errors.New("unauthorized")
 	}

@@ -22,7 +22,7 @@ func TestGenerateAccessToken(t *testing.T) {
 		t.Fatalf("signing key not found")
 	}
 
-	validClaims := accessTokenClaims{
+	validClaims := AccessTokenClaims{
 		Sub:   "test-user",
 		Email: "test@gmail.com",
 		RegisteredClaims: jwt.RegisteredClaims{

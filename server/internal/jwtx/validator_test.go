@@ -21,7 +21,7 @@ func init() {
 func TestValidateAccessToken(t *testing.T) {
 	signingKey := os.Getenv("PERSONABOX_SECRET")
 
-	validClaims := accessTokenClaims{
+	validClaims := AccessTokenClaims{
 		Sub:   "test-user",
 		Email: "test@gmail.com",
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -31,7 +31,7 @@ func TestValidateAccessToken(t *testing.T) {
 		},
 	}
 
-	expiredClaims := accessTokenClaims{
+	expiredClaims := AccessTokenClaims{
 		Sub:   "test-user",
 		Email: "test@gmail.com",
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -41,7 +41,7 @@ func TestValidateAccessToken(t *testing.T) {
 		},
 	}
 
-	invalidClaims := accessTokenClaims{
+	invalidClaims := AccessTokenClaims{
 		Sub:   "test-user",
 		Email: "test@gmail.com",
 		RegisteredClaims: jwt.RegisteredClaims{

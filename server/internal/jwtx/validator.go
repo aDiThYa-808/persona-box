@@ -10,31 +10,25 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-type JWTClaims struct {
-	Email string `json:"email"`
-	Sub   string `json:"sub"`
-	jwt.RegisteredClaims
-}
-
 // verifies the provided access token and returns parsed claims(type JWTClaims) or an error if the token is invalid.
-func ValidateAccessToken(accessToken string) (JWTClaims, error) {
+func ValidateAccessToken(accessToken string) (AccessTokenClaims, error) {
 
-	claims := &JWTClaims{}
+	claims := &AccessTokenClaims{}
 	token, parseErr := jwt.ParseWithClaims(accessToken, claims, keyFunc, jwt.WithValidMethods([]string{"HS256"}))
 
 	if parseErr != nil || token == nil {
-		return JWTClaims{}, errors.New("unauthorized")
+		return AccessTokenClaims{}, errors.New("unauthorized")
 	}
 
 	if !token.Valid {
-		return JWTClaims{}, errors.New("unauthorized")
+		return AccessTokenClaims{}, errors.New("unauthorized")
 	}
 
 	verifyErr := verifyClaims(*claims)
 
 	if verifyErr != nil {
 
-		return JWTClaims{}, verifyErr
+		return AccessTokenClaims{}, verifyErr
 	}
 
 	return *claims, nil

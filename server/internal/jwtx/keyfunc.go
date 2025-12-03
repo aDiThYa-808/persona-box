@@ -8,7 +8,7 @@ import (
 )
 
 func keyFunc(t *jwt.Token) (interface{}, error) {
-	_, ok := t.Claims.(*JWTClaims)
+	_, ok := t.Claims.(*AccessTokenClaims)
 	if !ok {
 		return nil, errors.New("unexpected claims type")
 	}
