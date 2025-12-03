@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// Extracts access token from request header and removes the "Bearer " prefix.
 func ExtractToken(r *http.Request) (string, error) {
 	header := r.Header.Get("Authorization")
 	if header == "" {
