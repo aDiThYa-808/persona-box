@@ -35,12 +35,6 @@ type googleClaims struct {
 	jwt.RegisteredClaims
 }
 
-type accessTokenClaims struct {
-	Sub   string `json:"sub"`
-	Email string `json:"email"`
-	jwt.RegisteredClaims
-}
-
 // constructor for dependency injection
 func New(jwks *keyfunc.JWKS) *handler {
 	return &handler{JWKS: jwks}
@@ -93,7 +87,7 @@ func (h *handler) GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tc := accessTokenClaims{
+	tc := jwtx.AccessTokenClaims{
 		Sub:   claims.Sub,
 		Email: claims.Email,
 		RegisteredClaims: jwt.RegisteredClaims{
