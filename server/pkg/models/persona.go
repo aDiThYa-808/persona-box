@@ -12,8 +12,8 @@ type Persona struct {
 }
 
 type About struct {
-	PersonaName        string   `json:"persona_name"`
-	PersonaDescription string   `json:"persona_description"`
+	PersonaName        string   `json:"name"`
+	PersonaDescription string   `json:"description"`
 	Age                int      `json:"age"`
 	Pronouns           []string `json:"pronouns"`
 }
@@ -40,8 +40,8 @@ type Interests struct {
 }
 
 type Language struct {
-	Formality float32 `json:"language_formality"`
-	Fluency   string  `json:"language_fluency"`
+	Formality float32 `json:"formality"`
+	Fluency   string  `json:"fluency"`
 }
 
 type Others struct {
