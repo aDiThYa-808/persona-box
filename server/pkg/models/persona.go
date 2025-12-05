@@ -40,8 +40,8 @@ type Interests struct {
 }
 
 type Language struct {
-	Formality float32 `json:"formality"`
-	Fluency   string  `json:"fluency"`
+	Formality float32 `json:"language_formality"`
+	Fluency   string  `json:"language_fluency"`
 }
 
 type Others struct {
