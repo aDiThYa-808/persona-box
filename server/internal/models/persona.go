@@ -1,8 +1,8 @@
 package models
 
 type Persona struct {
-	PersonaID string `json:"persona_id"`
-	UserID    string `json:"user_id"`
+	PersonaID string `json:"persona_id"` //SK
+	UserID    string `json:"user_id"`    //PK
 	About
 	BaseType
 	More
