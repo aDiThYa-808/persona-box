@@ -10,6 +10,7 @@ import (
 	"github.com/awslabs/aws-lambda-go-api-proxy/httpadapter"
 	"github.com/joho/godotenv"
 
+	"github.com/aDiThYa-808/persona-box/internal/dynamodb"
 	handlers "github.com/aDiThYa-808/persona-box/internal/handlers"
 	middlewares "github.com/aDiThYa-808/persona-box/internal/middlewares"
 )
@@ -33,6 +34,9 @@ func init() {
 			log.Fatal("env not found." + loadErr.Error())
 		}
 	}
+
+	//create dynamodb client
+	dynamodb.Init()
 
 	// Fetch and hold google's JWKS for verification
 	var jwksErr error
