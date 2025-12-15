@@ -54,6 +54,7 @@ func main() {
 	mux.Handle("/auth/google", http.HandlerFunc(h.GoogleAuthHandler))
 	mux.Handle("/health", http.HandlerFunc(handlers.HealthHandler))
 	mux.Handle("/chat", http.HandlerFunc(handlers.ChatHandler))
+	mux.Handle("/test", http.HandlerFunc(handlers.Tstendpoint))
 
 	//remove prefix from incoming req url
 	handler := middlewares.StripStagePrefix(mux)
