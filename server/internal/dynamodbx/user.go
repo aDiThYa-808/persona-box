@@ -1,10 +1,10 @@
-package dynamodb
+package dynamodbx
 
 import (
 	"context"
 	"errors"
 
-	"github.com/aDiThYa-808/persona-box/internal/models"
+	"github.com/aDiThYa-808/persona-box/internal/dynamodbx/models"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
