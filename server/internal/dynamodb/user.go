@@ -18,7 +18,6 @@ func CreateNewUser(ctx context.Context, user models.User) (created bool, error e
 			"UserID":      &types.AttributeValueMemberS{Value: user.UserID},
 			"Email":       &types.AttributeValueMemberS{Value: user.Email},
 			"DisplayName": &types.AttributeValueMemberS{Value: user.DisplayName},
-			"Picture":     &types.AttributeValueMemberS{Value: user.Picture},
 			"CreatedAt":   &types.AttributeValueMemberS{Value: user.CreatedAt},
 		},
 		ConditionExpression: aws.String("attribute_not_exists(UserID)"),
