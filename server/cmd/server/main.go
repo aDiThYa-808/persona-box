@@ -10,7 +10,7 @@ import (
 	"github.com/awslabs/aws-lambda-go-api-proxy/httpadapter"
 	"github.com/joho/godotenv"
 
-	"github.com/aDiThYa-808/persona-box/internal/dynamodb"
+	"github.com/aDiThYa-808/persona-box/internal/dynamodbx"
 	handlers "github.com/aDiThYa-808/persona-box/internal/handlers"
 	middlewares "github.com/aDiThYa-808/persona-box/internal/middlewares"
 )
@@ -36,7 +36,7 @@ func init() {
 	}
 
 	//create dynamodb client
-	dynamodb.Init()
+	dynamodbx.Init()
 
 	// Fetch and hold google's JWKS for verification
 	var jwksErr error
