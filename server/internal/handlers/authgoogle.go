@@ -10,6 +10,8 @@ import (
 	"github.com/MicahParks/keyfunc"
 	"github.com/golang-jwt/jwt/v4"
 
+	"github.com/aDiThYa-808/persona-box/internal/dynamodbx"
+	"github.com/aDiThYa-808/persona-box/internal/dynamodbx/models"
 	"github.com/aDiThYa-808/persona-box/internal/httpx"
 	"github.com/aDiThYa-808/persona-box/internal/jwtx"
 )
@@ -85,6 +87,20 @@ func (h *handler) GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	authRes := authResponse{
 		AccessToken: signedToken,
+	}
+
+	user := models.User{
+		UserID:      claims.Sub,
+		Email:       claims.Email,
+		DisplayName: claims.Name,
+		CreatedAt:   time.Now().UTC().Format(time.RFC3339),
+	}
+
+	ctx := r.Context()
+
+	_, createErr := dynamodbx.CreateNewUser(ctx, user)
+	if createErr != nil {
+		httpx.WriteJSONError(w, "couldnt create user.", http.StatusInternalServerError)
 	}
 
 	httpx.WriteJSONSuccess(w, authRes)
