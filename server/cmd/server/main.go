@@ -53,6 +53,7 @@ func main() {
 
 	mux.Handle("/auth/google", http.HandlerFunc(h.GoogleAuthHandler))
 	mux.Handle("/health", http.HandlerFunc(handlers.HealthHandler))
+	mux.Handle("/user", http.HandlerFunc(handlers.GetUserHandler))
 	mux.Handle("/chat", http.HandlerFunc(handlers.ChatHandler))
 	mux.Handle("/test", http.HandlerFunc(handlers.Tstendpoint))
 
