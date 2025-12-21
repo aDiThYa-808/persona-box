@@ -13,6 +13,7 @@ func Tstendpoint(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		httpx.WriteJSONError(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	httpx.WriteJSONSuccess(w, map[string]string{

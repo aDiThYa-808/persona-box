@@ -11,6 +11,7 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 	accessToken, extractErr := httpx.ExtractToken(r)
 	if extractErr != nil {
 		httpx.WriteJSONError(w, extractErr.Error(), http.StatusBadRequest)
+		return
 	}
 
 	claims, validateErr := jwtx.ValidateAccessToken(accessToken)

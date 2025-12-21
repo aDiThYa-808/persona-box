@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/aDiThYa-808/persona-box/internal/jwtx"
 	"github.com/aDiThYa-808/persona-box/internal/httpx"
+	"github.com/aDiThYa-808/persona-box/internal/jwtx"
 
 	"github.com/openai/openai-go/v3"
 	"github.com/openai/openai-go/v3/option"
@@ -22,11 +22,13 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 	accessToken, extractErr := httpx.ExtractToken(r)
 	if extractErr != nil {
 		httpx.WriteJSONError(w, extractErr.Error(), http.StatusBadRequest)
+		return
 	}
 
 	_, validateErr := jwtx.ValidateAccessToken(accessToken)
 	if validateErr != nil {
 		httpx.WriteJSONError(w, validateErr.Error(), http.StatusUnauthorized)
+		return
 	}
 
 	var req ChatRequest

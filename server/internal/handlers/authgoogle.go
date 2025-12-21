@@ -58,12 +58,14 @@ func (h *handler) GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 	if parseErr != nil {
 		log.Println(parseErr.Error())
 		httpx.WriteJSONError(w, "Unauthorized", http.StatusUnauthorized)
+		return
 	}
 
 	verifyErr := jwtx.VerifyGoogleClaims(claims)
 	if verifyErr != nil {
 		log.Println(verifyErr.Error())
 		httpx.WriteJSONError(w, "Unauthorized", http.StatusUnauthorized)
+		return
 	}
 
 	tc := jwtx.AccessTokenClaims{
@@ -83,6 +85,7 @@ func (h *handler) GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 	if tokenErr != nil {
 		log.Println(tokenErr.Error())
 		httpx.WriteJSONError(w, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
 
 	authRes := authResponse{
@@ -101,6 +104,7 @@ func (h *handler) GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 	_, createErr := dynamodbx.CreateNewUser(ctx, user)
 	if createErr != nil {
 		httpx.WriteJSONError(w, "couldnt create user.", http.StatusInternalServerError)
+		return
 	}
 
 	httpx.WriteJSONSuccess(w, authRes)
