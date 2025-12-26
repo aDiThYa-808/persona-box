@@ -4,16 +4,11 @@ import { error, isHttpError, type RequestEvent } from '@sveltejs/kit';
 export async function GET(event: RequestEvent) {
 	try {
 		const invokeUrl = PUBLIC_AWS_INVOKE_URL;
-		const token = event.cookies.get('pb_access_token');
-		if (!token) {
-			throw error(400, 'unauthorized');
-		}
+		const cookies = event.request.headers.get('Cookie');
 
 		const res = await fetch(`${invokeUrl}/user`, {
 			method: 'GET',
-			headers: {
-				Authorization: `Bearer ${token}`
-			}
+			headers: cookies === null ? undefined : { Cookie: cookies }
 		});
 
 		if (!res.ok) {
