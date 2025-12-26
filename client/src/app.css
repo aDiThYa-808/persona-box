@@ -1,8 +1,10 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 
-@layer base{
-    html,body{
-        @apply bg-[#0f0f0f] text-white;
-    }
+@theme {
+	--color-background: #181818;
+	--color-card: #212121;
+	--color-text: #ffffff;
+	--color-card-hover: #1f1f1f;
+	--color-text-muted: #a0a0a0;
 }
