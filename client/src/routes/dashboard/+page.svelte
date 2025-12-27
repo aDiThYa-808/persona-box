@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Sidebar from '$lib/components/sidebar.svelte';
+	import Chat from '$lib/components/chat.svelte';
 	import type { Persona } from '$lib/types/persona.js';
 	import type { User } from '$lib/types/user';
 
@@ -38,3 +39,4 @@
 </script>
 
 <Sidebar name={data.name} email={data.email} {personas} />
+<Chat />
