@@ -43,7 +43,7 @@
 				throw error(500, 'Login failed');
 			}
 
-			await goto('/dashboard', {
+			await goto('/chat', {
 				replaceState: true,
 				noScroll: false
 			});

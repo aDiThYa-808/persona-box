@@ -39,7 +39,7 @@
 				Create custom AI personas
 			</h1>
 			<a
-				href="/dashboard"
+				href="/chat"
 				class="inline-block rounded-lg bg-text px-6 py-3 font-medium text-background transition-colors hover:bg-text/90"
 			>
 				Try PersonaBox
