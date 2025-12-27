@@ -21,7 +21,7 @@ type ChatRequest struct {
 func ChatHandler(w http.ResponseWriter, r *http.Request) {
 	accessToken, extractErr := httpx.ExtractToken(r)
 	if extractErr != nil {
-		httpx.WriteJSONError(w, extractErr.Error(), http.StatusBadRequest)
+		httpx.WriteJSONError(w, extractErr.Error(), http.StatusUnauthorized)
 		return
 	}
 
