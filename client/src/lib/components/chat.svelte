@@ -1,8 +1,5 @@
 <script lang="ts">
 	import type { Message } from '$lib/types/message';
-	import { PUBLIC_AWS_INVOKE_URL } from '$env/static/public';
-
-	const apiBaseUrl = PUBLIC_AWS_INVOKE_URL;
 
 	let prompt = '';
 	let loading = false;
@@ -14,7 +11,7 @@
 
 		loading = true;
 		try {
-			const response = await fetch(`${apiBaseUrl}/chat`, {
+			const response = await fetch(`api/chat`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -62,7 +59,7 @@
 			{#each messages as msg, i (i)}
 				<div class="flex {msg.role === 'user' ? 'justify-end' : 'justify-start'} mb-4">
 					<div
-						class={`max-w-[85%] px-4 py-2.5 text-sm leading-relaxed ${
+						class={`max-w-[85%] px-4 py-2.5 text-lg leading-relaxed ${
 							msg.role === 'user' ? 'rounded-2xl bg-card text-text' : 'text-text'
 						}`}
 					>
@@ -72,7 +69,7 @@
 			{/each}
 			{#if loading}
 				<div class="mb-4 flex justify-start">
-					<div class="px-1 py-2 text-sm text-text-muted">
+					<div class="px-1 py-2 text-lg text-text-muted">
 						<span class="inline-flex items-center gap-1">
 							<span class="animate-pulse">●</span>
 							<span class="animate-pulse delay-75">●</span>
@@ -95,7 +92,7 @@
 				bind:value={prompt}
 				rows="1"
 				placeholder="Type a message..."
-				class="flex-1 resize-none border-0 bg-transparent px-3 py-2.5 text-sm text-text placeholder-text-muted focus:ring-0 focus:outline-none"
+				class="flex-1 resize-none border-0 bg-transparent px-3 py-2.5 text-lg text-text placeholder-text-muted focus:ring-0 focus:outline-none"
 				style="overflow: hidden;"
 				on:input={(e) => {
 					e.currentTarget.style.height = 'auto';
