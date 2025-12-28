@@ -1,39 +1,12 @@
 <script lang="ts">
 	import type { Message } from '$lib/types/message';
 
+	export let chatName: string;
+	export let messages: Message[];
+	export let loading: boolean;
+	export let sendPrompt: (prompt: string) => void;
+
 	let prompt = '';
-	let loading = false;
-	let messages: Message[] = [];
-	let chatName = 'This is the name of this chat';
-
-	async function sendPrompt(prompt: string) {
-		messages = [...messages, { role: 'user', text: prompt }];
-
-		loading = true;
-		try {
-			const response = await fetch(`api/chat`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					message: prompt
-				})
-			});
-
-			if (!response.ok) {
-				throw new Error(`HTTP error. Status: ${response.status}`);
-			}
-
-			const data = await response.json();
-
-			messages = [...messages, { role: 'assistant', text: data.response }];
-		} catch (err) {
-			messages = [...messages, { role: 'assistant', text: (err as Error).message }];
-		} finally {
-			loading = false;
-		}
-	}
 
 	function handleSend() {
 		if (!prompt.trim() || loading) return;
@@ -81,7 +54,7 @@
 		</div>
 	</div>
 
-	<!-- Floating Input -->
+	<!--Input -->
 	<div
 		class="fixed right-0 bottom-0 left-0 bg-linear-to-t from-background via-background to-transparent px-4 pt-8 pb-6 lg:left-72"
 	>

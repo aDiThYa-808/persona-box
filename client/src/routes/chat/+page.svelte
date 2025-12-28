@@ -3,8 +3,42 @@
 	import Chat from '$lib/components/chat.svelte';
 	import type { Persona } from '$lib/types/persona.js';
 	import type { User } from '$lib/types/user';
+	import type { Message } from '$lib/types/message';
 
 	export let data: User;
+
+	let chatName = 'This is the chat name';
+	let messages: Message[] = [];
+	let loading: boolean = false;
+
+	async function sendPrompt(prompt: string) {
+		messages = [...messages, { role: 'user', text: prompt }];
+
+		loading = true;
+		try {
+			const response = await fetch(`api/chat`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					message: prompt
+				})
+			});
+
+			if (!response.ok) {
+				throw new Error(`HTTP error. Status: ${response.status}`);
+			}
+
+			const data = await response.json();
+
+			messages = [...messages, { role: 'assistant', text: data.response }];
+		} catch (err) {
+			messages = [...messages, { role: 'assistant', text: (err as Error).message }];
+		} finally {
+			loading = false;
+		}
+	}
 
 	// sample data, will be removed later
 	let personas: Persona[] = [
@@ -39,4 +73,4 @@
 </script>
 
 <Sidebar name={data.name} email={data.email} {personas} />
-<Chat />
+<Chat {chatName} {messages} {sendPrompt} {loading} />
