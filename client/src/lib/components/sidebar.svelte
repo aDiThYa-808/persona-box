@@ -2,15 +2,15 @@
 	import type { Persona } from '$lib/types/persona';
 	import { onMount } from 'svelte';
 
-	export let name: string = 'John Doe';
-	export let email: string = 'john@example.com';
+	export let name: string;
+	export let email: string;
 	export let personas: Persona[];
 
 	let isOpen = false;
 	let expandedPersonas: string[] = [];
 	let selectedChatId: string | null = null;
 
-	// Check if we're on desktop on mount
+	// Check if we on desktop on mount
 	onMount(() => {
 		const checkDesktop = () => {
 			isOpen = window.innerWidth >= 1024; // lg breakpoint
