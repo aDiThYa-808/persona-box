@@ -1,14 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { PUBLIC_GOOGLE_CLIENT_ID } from '$env/static/public';
-	import { PUBLIC_BASE_URL } from '$env/static/public';
-	import { PUBLIC_ENVIRONMENT } from '$env/static/public';
 	import { error } from '@sveltejs/kit';
 	import { onMount } from 'svelte';
 
 	const clientId = PUBLIC_GOOGLE_CLIENT_ID;
-	const baseURL =
-		PUBLIC_ENVIRONMENT.toLowerCase() == 'local' ? 'http://localhost:5173' : PUBLIC_BASE_URL;
 
 	onMount(() => {
 		window.google.accounts.id.initialize({
@@ -29,7 +25,7 @@
 
 	async function verifyJWT(jwt: string) {
 		try {
-			const response = await fetch(`${baseURL}/api/auth/login`, {
+			const response = await fetch(`/api/auth/login`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
