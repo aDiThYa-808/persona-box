@@ -1,6 +1,5 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { User } from '$lib/types/user';
-import { PUBLIC_BASE_URL, PUBLIC_ENVIRONMENT } from '$env/static/public';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ locals, fetch }) => {
@@ -8,7 +7,7 @@ export const load: LayoutServerLoad = async ({ locals, fetch }) => {
 		throw redirect(302, '/login');
 	}
 	try {
-		const res = await fetch(`api/auth/user`);
+		const res = await fetch(`/api/auth/user`);
 
 		if (!res.ok) {
 			throw error(res.status, 'user not found');
