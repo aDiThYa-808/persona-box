@@ -55,6 +55,7 @@ func main() {
 	mux.Handle("/health", http.HandlerFunc(handlers.HealthHandler))
 	mux.Handle("/user", http.HandlerFunc(handlers.GetUserHandler))
 	mux.Handle("/chat", http.HandlerFunc(handlers.ChatHandler))
+	mux.Handle("/create",http.HandlerFunc(handlers.CreatePersonaHandler))
 	mux.Handle("/test", http.HandlerFunc(handlers.Tstendpoint))
 
 	//remove prefix from incoming req url
