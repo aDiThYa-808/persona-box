@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import type { PersonaList } from '$lib/types/persona';
 	import { onMount } from 'svelte';
 
@@ -77,6 +79,10 @@
 	<div class="border-b border-white/10 px-3 py-3">
 		<button
 			class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-text transition-colors hover:bg-background"
+			on:click={() => {
+				goto(resolve('/chat/new'));
+				isOpen = false;
+			}}
 		>
 			<svg
 				width="18"
