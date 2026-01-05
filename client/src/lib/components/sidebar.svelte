@@ -1,10 +1,10 @@
 <script lang="ts">
-	import type { Persona } from '$lib/types/persona';
+	import type { PersonaList } from '$lib/types/persona';
 	import { onMount } from 'svelte';
 
 	export let name: string;
 	export let email: string;
-	export let personas: Persona[];
+	export let personas: PersonaList[];
 
 	let isOpen = false;
 	let expandedPersonas: string[] = [];

@@ -1,12 +1,12 @@
 <script lang="ts">
 	import Sidebar from '$lib/components/sidebar.svelte';
 	import type { User } from '$lib/types/user';
-	import type { Persona } from '$lib/types/persona';
+	import type { PersonaList } from '$lib/types/persona';
 
 	export let data: User;
 
 	// sample data, will be removed later
-	let personas: Persona[] = [
+	let personas: PersonaList[] = [
 		{
 			id: '1',
 			name: 'Helpful Assistant',
