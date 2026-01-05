@@ -424,13 +424,16 @@
 
 				<div class="mb-6">
 					<label for="fluency" class="mb-2 block text-sm font-medium text-text">Fluency *</label>
-					<input
+					<select
 						id="fluency"
-						type="text"
 						bind:value={formData.fluency}
-						class="w-full rounded-lg border border-white/10 bg-card px-4 py-2.5 text-text placeholder-text-muted focus:ring-2 focus:ring-white/20 focus:outline-none"
-						placeholder="e.g., native, fluent, conversational"
-					/>
+						class="w-full rounded-lg border border-white/10 bg-card px-4 py-2.5 text-text focus:ring-2 focus:ring-white/20 focus:outline-none"
+					>
+						<option value="" disabled selected>Select fluency level</option>
+						<option value="beginner">Beginner</option>
+						<option value="intermediate">Intermediate</option>
+						<option value="proficient">Proficient</option>
+					</select>
 				</div>
 			</div>
 
@@ -446,26 +449,33 @@
 						<label for="emoji_usage" class="mb-2 block text-sm font-medium text-text"
 							>Emoji Usage *</label
 						>
-						<input
+						<select
 							id="emoji_usage"
-							type="text"
 							bind:value={formData.emoji_usage}
-							class="w-full rounded-lg border border-white/10 bg-card px-4 py-2.5 text-text placeholder-text-muted focus:ring-2 focus:ring-white/20 focus:outline-none"
-							placeholder="e.g., frequent, moderate, rare, none"
-						/>
+							class="w-full rounded-lg border border-white/10 bg-card px-4 py-2.5 text-text focus:ring-2 focus:ring-white/20 focus:outline-none"
+						>
+							<option value="" disabled selected>Select emoji usage level</option>
+							<option value="frequent">Frequent</option>
+							<option value="moderate">Moderate</option>
+							<option value="rare">Rare</option>
+							<option value="none">None</option>
+						</select>
 					</div>
 
 					<div>
 						<label for="response_length" class="mb-2 block text-sm font-medium text-text"
 							>Response Length *</label
 						>
-						<input
+						<select
 							id="response_length"
-							type="text"
 							bind:value={formData.response_length}
-							class="w-full rounded-lg border border-white/10 bg-card px-4 py-2.5 text-text placeholder-text-muted focus:ring-2 focus:ring-white/20 focus:outline-none"
-							placeholder="e.g., concise, moderate, detailed"
-						/>
+							class="w-full rounded-lg border border-white/10 bg-card px-4 py-2.5 text-text focus:ring-2 focus:ring-white/20 focus:outline-none"
+						>
+							<option value="" disabled selected>Select response length</option>
+							<option value="concise">Concise</option>
+							<option value="moderate">Moderate</option>
+							<option value="detailed">Detailed</option>
+						</select>
 					</div>
 				</div>
 			</div>
