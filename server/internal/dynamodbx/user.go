@@ -15,7 +15,7 @@ import (
 Creates a new item in the User table using PutItem().
 Returns created = true if item is added successfully.
 Returns created = false if item already exists with the same user.UserID.
-Returns error is PutItem() fails.
+Returns error if PutItem() fails.
 */
 func CreateNewUser(ctx context.Context, user models.User) (created bool, error error) {
 
