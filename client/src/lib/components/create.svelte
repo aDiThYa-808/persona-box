@@ -56,7 +56,10 @@
 			name: formData.name,
 			description: formData.description,
 			age: parseInt(formData.age),
-			pronouns: formData.pronouns,
+			pronouns: formData.pronouns
+				.split('/')
+				.map((item) => item.trim())
+				.filter(Boolean),
 			openness: formData.openness,
 			conscientiousness: formData.conscientiousness,
 			extraversion: formData.extraversion,
@@ -64,7 +67,10 @@
 			neuroticism: formData.neuroticism,
 			intelligence: formData.intelligence,
 			thinking_style: formData.thinking_style,
-			tone: formData.tone,
+			tone: formData.tone
+				.split(',')
+				.map((item) => item.trim())
+				.filter(Boolean),
 			humor_level: formData.humor_level,
 			mood_fluctuation: formData.mood_fluctuation,
 			likes: formData.likes

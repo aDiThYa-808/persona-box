@@ -11,9 +11,9 @@ export interface PersonaData {
 	name: string;
 	description: string;
 	age: number;
-	pronouns: string;
+	pronouns: string[];
 
-	// Base Type (Big Five)
+	// Base Type
 	openness: number;
 	conscientiousness: number;
 	extraversion: number;
@@ -23,7 +23,7 @@ export interface PersonaData {
 	// More
 	intelligence: number;
 	thinking_style: number;
-	tone: string;
+	tone: string[];
 	humor_level: number;
 	mood_fluctuation: number;
 
