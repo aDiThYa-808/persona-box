@@ -8,6 +8,7 @@ import (
 	"github.com/aDiThYa-808/persona-box/internal/dynamodbx/models"
 	"github.com/aDiThYa-808/persona-box/internal/httpx"
 	"github.com/aDiThYa-808/persona-box/internal/jwtx"
+	"github.com/google/uuid"
 )
 
 func CreatePersonaHandler(w http.ResponseWriter, r *http.Request) {
@@ -31,12 +32,31 @@ func CreatePersonaHandler(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 	userID := claims.Sub
-	personaID := "" // create unique id
+	personaID := uuid.New().String()
 
 	persona := models.Persona{
-		UserID:    userID,
-		PersonaID: personaID,
-		//add the remaining fields
+		PersonaID:          personaID,
+		UserID:             userID,
+		PersonaName:        req.PersonaName,
+		PersonaDescription: req.PersonaDescription,
+		Age:                req.Age,
+		Pronouns:           req.Pronouns,
+		Openness:           req.Openness,
+		Conscientiousness:  req.Conscientiousness,
+		Extraversion:       req.Extraversion,
+		Agreeableness:      req.Agreeableness,
+		Neuroticism:        req.Neuroticism,
+		Intelligence:       req.Intelligence,
+		ThinkingStyle:      req.ThinkingStyle,
+		Tone:               req.Tone,
+		HumorLevel:         req.HumorLevel,
+		MoodFluctuation:    req.MoodFluctuation,
+		Likes:              req.Likes,
+		Dislikes:           req.Dislikes,
+		Formality:          req.Formality,
+		Fluency:            req.Fluency,
+		EmojiUsage:         req.EmojiUsage,
+		ResponseLength:     req.ResponseLength,
 	}
 
 	createErr := dynamodbx.CreateNewPersona(ctx, persona)
@@ -44,4 +64,6 @@ func CreatePersonaHandler(w http.ResponseWriter, r *http.Request) {
 		httpx.WriteJSONError(w, "failed to create persona", http.StatusInternalServerError)
 		return
 	}
+
+	httpx.WriteJSONSuccess(w, map[string]string{"message": "successfully created persona"})
 }
