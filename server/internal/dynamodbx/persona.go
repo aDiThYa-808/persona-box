@@ -10,6 +10,10 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
+/*
+Creates a new item in the Persona table using PutItem().
+Returns error if PutItem() fails.
+*/
 func CreateNewPersona(ctx context.Context, persona models.Persona) error {
 	putParams := &dynamodb.PutItemInput{
 		TableName: aws.String("Persona"),
@@ -27,7 +31,7 @@ func CreateNewPersona(ctx context.Context, persona models.Persona) error {
 			"Neuroticism":        &types.AttributeValueMemberN{Value: strconv.FormatFloat(float64(persona.Neuroticism), 'f', -1, 32)},
 			"Intelligence":       &types.AttributeValueMemberN{Value: strconv.FormatFloat(float64(persona.Intelligence), 'f', -1, 32)},
 			"ThinkingStyle":      &types.AttributeValueMemberN{Value: strconv.FormatFloat(float64(persona.ThinkingStyle), 'f', -1, 32)},
-			"Tone":               &types.AttributeValueMemberS{Value: persona.Tone},
+			"Tone":               &types.AttributeValueMemberSS{Value: persona.Tone},
 			"HumorLevel":         &types.AttributeValueMemberN{Value: strconv.FormatFloat(float64(persona.HumorLevel), 'f', -1, 32)},
 			"MoodFluctuation":    &types.AttributeValueMemberN{Value: strconv.FormatFloat(float64(persona.MoodFluctuation), 'f', -1, 32)},
 			"Likes":              &types.AttributeValueMemberSS{Value: persona.Likes},
