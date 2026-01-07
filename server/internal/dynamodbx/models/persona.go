@@ -14,7 +14,7 @@ type Persona struct {
 	Neuroticism        float32  `json:"neuroticism"`
 	Intelligence       float32  `json:"intelligence"`
 	ThinkingStyle      float32  `json:"thinking_style"`
-	Tone               string   `json:"tone"`
+	Tone               []string `json:"tone"`
 	HumorLevel         float32  `json:"humor_level"`
 	MoodFluctuation    float32  `json:"mood_fluctuation"`
 	Likes              []string `json:"likes"`
