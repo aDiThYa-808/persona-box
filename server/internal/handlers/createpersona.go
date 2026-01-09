@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/aDiThYa-808/persona-box/internal/dynamodbx"
 	"github.com/aDiThYa-808/persona-box/internal/dynamodbx/models"
@@ -31,12 +32,14 @@ func CreatePersonaHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	userID := claims.Sub
-	personaID := uuid.New().String()
+	req.UserID = claims.Sub
+
+	// assign unique persona id(sort key) for the persona
+	req.PersonaID = uuid.New().String()
 
 	persona := models.Persona{
-		PersonaID:          personaID,
-		UserID:             userID,
+		PersonaID:          req.PersonaID,
+		UserID:             req.UserID,
 		PersonaName:        req.PersonaName,
 		PersonaDescription: req.PersonaDescription,
 		Age:                req.Age,
@@ -57,6 +60,7 @@ func CreatePersonaHandler(w http.ResponseWriter, r *http.Request) {
 		Fluency:            req.Fluency,
 		EmojiUsage:         req.EmojiUsage,
 		ResponseLength:     req.ResponseLength,
+		CreatedAt:          time.Now().UTC().Format(time.RFC3339),
 	}
 
 	createErr := dynamodbx.CreateNewPersona(ctx, persona)
@@ -65,5 +69,11 @@ func CreatePersonaHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httpx.WriteJSONSuccess(w, map[string]string{"message": "successfully created persona"})
+	response := map[string]string{
+		"message":    "successfully created persona",
+		"persona_id": req.PersonaID,
+	}
+
+	httpx.WriteJSONSuccess(w, response)
+
 }
