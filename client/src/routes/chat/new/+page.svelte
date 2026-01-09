@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { PersonaData } from '$lib/types/persona';
 	import Create from '$lib/components/create.svelte';
+	import { goto, replaceState } from '$app/navigation';
 
 	async function createPersona(data: PersonaData) {
 		try {
@@ -18,7 +19,11 @@
 
 			const resData = await res.json();
 
-			console.log(JSON.stringify(resData));
+			await goto(`/chat/${resData.persona_id}`,{
+				replaceState:true,
+				noScroll:false
+			})
+			
 		} catch (err) {
 			console.log(err);
 		}
