@@ -6,6 +6,7 @@ import (
 
 	"github.com/aDiThYa-808/persona-box/internal/dynamodbx/models"
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
@@ -40,6 +41,7 @@ func CreateNewPersona(ctx context.Context, persona models.Persona) error {
 			"Fluency":            &types.AttributeValueMemberS{Value: persona.Fluency},
 			"EmojiUsage":         &types.AttributeValueMemberS{Value: persona.EmojiUsage},
 			"ResponseLength":     &types.AttributeValueMemberS{Value: persona.ResponseLength},
+			"CreatedAt":          &types.AttributeValueMemberS{Value: persona.CreatedAt},
 		},
 	}
 
@@ -49,4 +51,30 @@ func CreateNewPersona(ctx context.Context, persona models.Persona) error {
 	}
 
 	return nil
+}
+
+func GetUsersPersonas(ctx context.Context, userID string) ([]models.PersonaList, error) {
+	queryParams := &dynamodb.QueryInput{
+		TableName:              aws.String("Persona"),
+		KeyConditionExpression: aws.String("PK = :uid"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":uid": &types.AttributeValueMemberS{Value: userID},
+		},
+	}
+
+	resp, queryErr := DB.Query(ctx, queryParams)
+	if queryErr != nil {
+		return []models.PersonaList{}, queryErr
+	}
+
+	personas := make([]models.PersonaList, len(resp.Items))
+
+	for i, item := range resp.Items {
+		unmarshallErr := attributevalue.UnmarshalMap(item, &personas[i])
+		if unmarshallErr != nil {
+			return []models.PersonaList{}, unmarshallErr
+		}
+	}
+
+	return personas, nil
 }
