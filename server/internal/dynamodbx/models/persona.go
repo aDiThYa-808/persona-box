@@ -23,4 +23,11 @@ type Persona struct {
 	Fluency            string   `json:"fluency"`
 	EmojiUsage         string   `json:"emoji_usage"`
 	ResponseLength     string   `json:"response_length"`
+	CreatedAt          string   `json:"created_at"`
+}
+
+type PersonaList struct {
+	PersonaID   string `json:"persona_id"`
+	PersonaName string `json:"name"`
+	CreatedAt   string `json:"created_at"`
 }
