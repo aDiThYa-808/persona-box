@@ -24,6 +24,10 @@ export async function POST(event: RequestEvent) {
 
 		const data = await res.json();
 
+		if(data.error){
+			throw error(500,data.error)
+		}
+
 		return new Response(JSON.stringify(data), { status: 200 });
 	} catch (err) {
 		if (isHttpError(err)) {
