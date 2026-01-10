@@ -3,7 +3,7 @@
 ## Create and chat with custom AI personas
 PersonaBox lets users design AI personas with configurable traits and interact with them via a chat interface. The system consists of a [SvelteKit application](./client/) for the UI and BFF logic, and a [Go serverless backend](./server/) for API and data management.
 
-## The O.C.E.A.N Model
+## The O.C.E.A.N Model - [wikipedia](https://en.wikipedia.org/wiki/Big_Five_personality_traits)
 PersonaBox uses the **OCEAN** personality model to let users create unique AI personas. Each dimension, **Openness, Conscientiousness, Extraversion, Agreeableness, Neuroticism**, can be adjusted via sliders to shape the persona’s behavior. <br><br>
 In addition to OCEAN, you can tweak other settings such as:
 + Name,age,pronouns and description
