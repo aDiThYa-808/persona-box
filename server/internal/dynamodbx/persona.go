@@ -56,7 +56,7 @@ func CreateNewPersona(ctx context.Context, persona models.Persona) error {
 func GetUsersPersonas(ctx context.Context, userID string) ([]models.PersonaList, error) {
 	queryParams := &dynamodb.QueryInput{
 		TableName:              aws.String("Persona"),
-		KeyConditionExpression: aws.String("PK = :uid"),
+		KeyConditionExpression: aws.String("UserID = :uid"),
 		ExpressionAttributeValues: map[string]types.AttributeValue{
 			":uid": &types.AttributeValueMemberS{Value: userID},
 		},
