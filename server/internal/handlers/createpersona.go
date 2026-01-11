@@ -70,8 +70,9 @@ func CreatePersonaHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := map[string]string{
-		"message":    "successfully created persona",
-		"persona_id": req.PersonaID,
+		"persona_id": persona.PersonaID,
+		"name":       persona.PersonaName,
+		"created_at": persona.CreatedAt,
 	}
 
 	httpx.WriteJSONSuccess(w, response)
