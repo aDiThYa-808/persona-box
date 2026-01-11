@@ -2,40 +2,34 @@
 	import Sidebar from '$lib/components/sidebar.svelte';
 	import type { User } from '$lib/types/user';
 	import type { PersonaList } from '$lib/types/persona';
+	import { personas } from '../../stores/personas';
+	import { onMount } from 'svelte';
 
 	export let data: User;
+	let fetchedPersonas: PersonaList[]
 
-	// sample data, will be removed later
-	let personas: PersonaList[] = [
-		{
-			id: '1',
-			name: 'Helpful Assistant',
-			chats: [
-				{ id: 'c1', title: 'Getting started with AI' },
-				{ id: 'c2', title: 'Code review help' },
-				{ id: 'c3', title: 'Project planning discussion' }
-			]
-		},
-		{
-			id: '2',
-			name: 'Creative Writer',
-			chats: [
-				{ id: 'c4', title: 'Story ideas brainstorm' },
-				{ id: 'c5', title: 'Character development' }
-			]
-		},
-		{
-			id: '3',
-			name: 'Technical Expert',
-			chats: [
-				{ id: 'c6', title: 'Database optimization' },
-				{ id: 'c7', title: 'System architecture review' },
-				{ id: 'c8', title: 'Security best practices' },
-				{ id: 'c9', title: 'API design patterns' }
-			]
+	onMount(async ()=>{
+		fetchedPersonas = await getUsersPersonas()
+		personas.set(fetchedPersonas)
+	})
+
+	async function getUsersPersonas():Promise<PersonaList[]>{
+		try{
+
+			const resp = await fetch(`/api/personas`)
+			if(!resp.ok){
+				const data = await resp.json()
+				throw new Error(`HTTP Error. status: ${resp.status}; message: ${data.error}`)
+
+			}
+			const personas = await resp.json()
+			return personas
+		}catch(err){
+			console.log(err)
+			return []
 		}
-	];
+	} 
 </script>
 
-<Sidebar name={data.name} email={data.email} {personas} />
+<Sidebar name={data.name} email={data.email}/>
 <slot />
