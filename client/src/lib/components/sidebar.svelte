@@ -1,16 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import type { PersonaList } from '$lib/types/persona';
 	import { onMount } from 'svelte';
+	import { personas } from '../../stores/personas';
 
 	export let name: string;
 	export let email: string;
-	export let personas: PersonaList[];
 
 	let isOpen = false;
-	let expandedPersonas: string[] = [];
-	let selectedChatId: string | null = null;
 
 	// Check if we on desktop on mount
 	onMount(() => {
@@ -24,12 +21,8 @@
 		return () => window.removeEventListener('resize', checkDesktop);
 	});
 
-	function togglePersona(personaId: string) {
-		if (expandedPersonas.includes(personaId)) {
-			expandedPersonas = expandedPersonas.filter((id) => id !== personaId);
-		} else {
-			expandedPersonas = [...expandedPersonas, personaId];
-		}
+	function goToPersonaPage(id:string){
+		goto(resolve(`/chat/${id}`))
 	}
 </script>
 
@@ -98,38 +91,23 @@
 		</button>
 	</div>
 
-	<!-- Personas List -->
+<!-- Personas List -->
 	<div class="flex-1 overflow-y-auto px-3 py-3">
 		<div class="px-3 py-2 text-xs font-medium text-text-muted">Recents</div>
-		{#each personas as persona (persona.id)}
+		{#each $personas.sort((a,b)=> b.created_at.localeCompare(a.created_at)) as persona (persona.persona_id)}
 			<div class="mb-2">
-				<!-- Persona Item -->
 				<div
 					class="group flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-background"
+					role="button"
+					tabindex="0"
+					on:click={() => goToPersonaPage(persona.persona_id)}
+					on:keydown={(e) => e.key === 'Enter' && goToPersonaPage(persona.persona_id)}
 				>
-					<button
-						on:click={() => togglePersona(persona.id)}
-						class="flex flex-1 items-center gap-2 text-left text-sm text-text"
-						aria-label="Toggle {persona.name}"
-					>
-						<svg
-							width="14"
-							height="14"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-							class="transition-transform {expandedPersonas.includes(persona.id)
-								? 'rotate-90'
-								: ''}"
-						>
-							<path d="M9 18l6-6-6-6" />
-						</svg>
-						<span class="truncate">{persona.name}</span>
-					</button>
+					<span class="flex-1 truncate text-sm text-text">{persona.name}</span>
 					<button
 						class="rounded p-1 text-text opacity-0 transition-opacity group-hover:opacity-100 hover:bg-background"
 						aria-label="Persona options"
+						on:click={(e) => e.stopPropagation()}
 					>
 						<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
 							<circle cx="12" cy="5" r="2" />
@@ -138,35 +116,6 @@
 						</svg>
 					</button>
 				</div>
-
-				<!-- Chats List (collapsible) -->
-				{#if expandedPersonas.includes(persona.id)}
-					<div class="mt-1 ml-6 space-y-1">
-						{#each persona.chats as chat (chat.id)}
-							<div
-								class="group flex cursor-pointer items-center gap-2 rounded-lg px-3 py-1.5 transition-colors hover:bg-background {selectedChatId ===
-								chat.id
-									? 'bg-background-light'
-									: ''}"
-								role="button"
-								tabindex="0"
-								aria-label="Open chat: {chat.title}"
-							>
-								<span class="flex-1 truncate text-sm text-text-muted">{chat.title}</span>
-								<button
-									class="rounded p-1 text-text opacity-0 transition-opacity group-hover:opacity-100 hover:bg-background"
-									aria-label="Chat options"
-								>
-									<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-										<circle cx="12" cy="5" r="2" />
-										<circle cx="12" cy="12" r="2" />
-										<circle cx="12" cy="19" r="2" />
-									</svg>
-								</button>
-							</div>
-						{/each}
-					</div>
-				{/if}
 			</div>
 		{/each}
 	</div>
