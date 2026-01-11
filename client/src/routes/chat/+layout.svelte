@@ -8,9 +8,12 @@
 	export let data: User;
 	let fetchedPersonas: PersonaList[]
 
+	// fetch users personas and set the personas store on mount
 	onMount(async ()=>{
 		fetchedPersonas = await getUsersPersonas()
-		personas.set(fetchedPersonas)
+
+		//store a sorted personas array (newest to oldest)
+		personas.set(fetchedPersonas.sort((a,b)=>b.created_at.localeCompare(a.created_at)))
 	})
 
 	async function getUsersPersonas():Promise<PersonaList[]>{

@@ -94,7 +94,7 @@
 <!-- Personas List -->
 	<div class="flex-1 overflow-y-auto px-3 py-3">
 		<div class="px-3 py-2 text-xs font-medium text-text-muted">Recents</div>
-		{#each $personas.sort((a,b)=> b.created_at.localeCompare(a.created_at)) as persona (persona.persona_id)}
+		{#each $personas as persona (persona.persona_id)}
 			<div class="mb-2">
 				<div
 					class="group flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-background"
