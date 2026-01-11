@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { PersonaData } from '$lib/types/persona';
 	import Create from '$lib/components/create.svelte';
-	import { goto, replaceState } from '$app/navigation';
+	import { goto } from '$app/navigation';
 
 	async function createPersona(data: PersonaData) {
 		try {
