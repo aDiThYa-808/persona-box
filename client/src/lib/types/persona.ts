@@ -1,9 +1,7 @@
-import type { Chat } from './chat';
-
 export interface PersonaList {
-	id: string;
+	persona_id: string;
 	name: string;
-	chats: Chat[];
+	created_at: string;
 }
 
 export interface PersonaData {
