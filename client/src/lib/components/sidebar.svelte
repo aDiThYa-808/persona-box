@@ -21,8 +21,8 @@
 		return () => window.removeEventListener('resize', checkDesktop);
 	});
 
-	function goToPersonaPage(id:string){
-		goto(resolve(`/chat/${id}`))
+	function goToPersonaPage(id: string) {
+		goto(resolve(`/chat/${id}`));
 	}
 </script>
 
@@ -91,7 +91,7 @@
 		</button>
 	</div>
 
-<!-- Personas List -->
+	<!-- Personas List -->
 	<div class="flex-1 overflow-y-auto px-3 py-3">
 		<div class="px-3 py-2 text-xs font-medium text-text-muted">Recents</div>
 		{#each $personas as persona (persona.persona_id)}
@@ -100,8 +100,14 @@
 					class="group flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-background"
 					role="button"
 					tabindex="0"
-					on:click={() => goToPersonaPage(persona.persona_id)}
-					on:keydown={(e) => e.key === 'Enter' && goToPersonaPage(persona.persona_id)}
+					on:click={() => {
+						goToPersonaPage(persona.persona_id);
+						isOpen = false;
+					}}
+					on:keydown={(e) => {
+						e.key === 'Enter' && goToPersonaPage(persona.persona_id);
+						isOpen = false;
+					}}
 				>
 					<span class="flex-1 truncate text-sm text-text">{persona.name}</span>
 					<button
