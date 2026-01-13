@@ -1,4 +1,5 @@
 export interface Chat {
-	id: string;
+	session_id: string;
 	title: string;
+	lastMessage: string
 }
