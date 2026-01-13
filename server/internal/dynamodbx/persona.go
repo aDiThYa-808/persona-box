@@ -53,6 +53,10 @@ func CreateNewPersona(ctx context.Context, persona models.Persona) error {
 	return nil
 }
 
+/*
+Returns all the items from Persona table that has the same partition key value as the provided userID using Query().
+Returns error if query fails.
+*/
 func GetUsersPersonas(ctx context.Context, userID string) ([]models.PersonaList, error) {
 	queryParams := &dynamodb.QueryInput{
 		TableName:              aws.String("Persona"),
