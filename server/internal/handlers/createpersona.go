@@ -12,6 +12,12 @@ import (
 	"github.com/google/uuid"
 )
 
+type createPersonaResponse struct {
+	PersonaID   string `json:"persona_id"`
+	PersonaName string `json:"name"`
+	CreatedAt   string `json:"created_at"`
+}
+
 func CreatePersonaHandler(w http.ResponseWriter, r *http.Request) {
 	token, extractErr := httpx.ExtractToken(r)
 	if extractErr != nil {
@@ -69,12 +75,11 @@ func CreatePersonaHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := map[string]string{
-		"persona_id": persona.PersonaID,
-		"name":       persona.PersonaName,
-		"created_at": persona.CreatedAt,
+	response := createPersonaResponse{
+		PersonaID:   persona.PersonaID,
+		PersonaName: persona.PersonaName,
+		CreatedAt:   persona.CreatedAt,
 	}
 
 	httpx.WriteJSONSuccess(w, response)
-
 }
