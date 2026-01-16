@@ -1,21 +1,27 @@
 package handlers
 
 import (
-	"context"
 	"encoding/json"
-	"log"
 	"net/http"
-	"os"
+	"time"
 
+	"github.com/aDiThYa-808/persona-box/internal/dynamodbx"
+	"github.com/aDiThYa-808/persona-box/internal/dynamodbx/models"
 	"github.com/aDiThYa-808/persona-box/internal/httpx"
 	"github.com/aDiThYa-808/persona-box/internal/jwtx"
-
-	"github.com/openai/openai-go/v3"
-	"github.com/openai/openai-go/v3/option"
+	"github.com/aDiThYa-808/persona-box/internal/openaiadapter"
+	"github.com/google/uuid"
 )
 
 type ChatRequest struct {
-	Message string `json:"message"`
+	SessionID string `json:"session_id"`
+	PersonaID string `json:"persona_id"`
+	Message   string `json:"message"`
+}
+
+type ChatResponse struct {
+	SessionID string `json:"session_id"`
+	Response  string `json:"response"`
 }
 
 func ChatHandler(w http.ResponseWriter, r *http.Request) {
@@ -34,43 +40,53 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 	var req ChatRequest
 	decodeErr := json.NewDecoder(r.Body).Decode(&req)
 
-	if decodeErr != nil || req.Message == "" {
-		httpx.WriteJSONError(w, "Missing 'message' field in the request body", http.StatusBadRequest)
+	if decodeErr != nil || req.Message == "" || req.PersonaID == "" {
+		httpx.WriteJSONError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
 	defer r.Body.Close()
 
-	openaiKey := os.Getenv("OPENAI_SECRET_KEY")
+	ctx := r.Context()
 
-	if openaiKey == "" {
-		httpx.WriteJSONError(w, "Internal Server Error", http.StatusInternalServerError)
-		log.Println("Couldnt find openai secret key")
-		return
+	response := ChatResponse{}
+
+	//if client didnt send a session_id, it means they want to create a new chat session.
+	if req.SessionID == "" {
+		title:= " "
+		summary := " "
+
+		chatSession := models.ChatSession{
+			SessionID:    uuid.New().String(),
+			PersonaID:    req.PersonaID,
+			Title:        title,
+			CreatedAt:    time.Now().UTC().Format(time.RFC3339),
+			UpdatedAt:    time.Now().UTC().Format(time.RFC3339),
+			MessageCount: 0,
+			TokenCount:   0,
+			Summary:      summary,
+		}
+
+		createErr := dynamodbx.CreateNewChatSession(ctx, chatSession)
+		if createErr != nil {
+			httpx.WriteJSONError(w, "failed to create new chat", http.StatusInternalServerError)
+			return
+		}
+
+		response.SessionID = chatSession.SessionID
 	}
 
-	client := openai.NewClient(
-		option.WithAPIKey(openaiKey),
-	)
+	systemMessage := ""
+	assistantMessage := ""
+	userMessage := req.Message
 
-	params := openai.ChatCompletionNewParams{
-		Messages: []openai.ChatCompletionMessageParamUnion{
-			openai.SystemMessage("You are a friendly and concise AI assistant. Keep responses short and clear."),
-			openai.UserMessage(req.Message),
-		},
-		Model: openai.ChatModelGPT4_1Mini,
-	}
-
-	chatCompletion, chatErr := client.Chat.Completions.New(context.TODO(), params)
-
+	responseMessage, _, chatErr := openaiadapter.Chat(ctx, systemMessage, assistantMessage, userMessage)
 	if chatErr != nil {
-		httpx.WriteJSONError(w, "Could not connect to the AI model", http.StatusInternalServerError)
+		httpx.WriteJSONError(w, "failed to access llm", http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{
-		"response": chatCompletion.Choices[0].Message.Content,
-	})
+	response.Response = responseMessage
 
+	httpx.WriteJSONSuccess(w, response)
 }
