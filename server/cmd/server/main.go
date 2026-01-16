@@ -13,9 +13,9 @@ import (
 	"github.com/aDiThYa-808/persona-box/internal/dynamodbx"
 	handlers "github.com/aDiThYa-808/persona-box/internal/handlers"
 	middlewares "github.com/aDiThYa-808/persona-box/internal/middlewares"
+	"github.com/aDiThYa-808/persona-box/internal/openaiadapter"
 )
 
-// helpers
 func isLambda() bool {
 	// Check for an aws env which will not be present locally.
 	_, exists := os.LookupEnv("AWS_LAMBDA_FUNCTION_NAME")
@@ -38,6 +38,9 @@ func init() {
 	//create dynamodb client
 	dynamodbx.Init()
 
+	//create openai client
+	openaiadapter.Init()
+
 	// Fetch and hold google's JWKS for verification
 	var jwksErr error
 	googleJWKS, jwksErr = keyfunc.Get("https://www.googleapis.com/oauth2/v3/certs", keyfunc.Options{})
@@ -56,7 +59,7 @@ func main() {
 	mux.Handle("/user", http.HandlerFunc(handlers.GetUserHandler))
 	mux.Handle("/chat", http.HandlerFunc(handlers.ChatHandler))
 	mux.Handle("/create-persona", http.HandlerFunc(handlers.CreatePersonaHandler))
-	mux.Handle("/personas",http.HandlerFunc(handlers.GetPersonasHandler))
+	mux.Handle("/personas", http.HandlerFunc(handlers.GetPersonasHandler))
 	mux.Handle("/test", http.HandlerFunc(handlers.Tstendpoint))
 
 	//remove prefix from incoming req url
