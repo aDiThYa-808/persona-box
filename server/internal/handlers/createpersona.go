@@ -36,6 +36,7 @@ func CreatePersonaHandler(w http.ResponseWriter, r *http.Request) {
 		httpx.WriteJSONError(w, "bad request", http.StatusBadRequest)
 		return
 	}
+	defer r.Body.Close()
 
 	ctx := r.Context()
 	req.UserID = claims.Sub
