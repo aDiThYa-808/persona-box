@@ -21,6 +21,7 @@ type ChatRequest struct {
 
 type ChatResponse struct {
 	SessionID string `json:"session_id"`
+	Title     string `json:"title"`
 	Response  string `json:"response"`
 }
 
@@ -53,8 +54,11 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 
 	//if client didnt send a session_id, it means they want to create a new chat session.
 	if req.SessionID == "" {
-		title:= " "
-		summary := " "
+		title, summary, chatErr := openaiadapter.GenerateTitleAndSummary(ctx, req.Message)
+		if chatErr != nil {
+			title = "New Chat"
+			summary = req.Message
+		}
 
 		chatSession := models.ChatSession{
 			SessionID:    uuid.New().String(),
@@ -74,10 +78,14 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		response.SessionID = chatSession.SessionID
+		response.Title = chatSession.Title
 	}
 
-	systemMessage := ""
-	assistantMessage := ""
+	// if message count or tokensUsed crosses the limit, end the chat session
+	// after a certain interval of message count, regenerate chat summary
+
+	systemMessage := ""    // build the system prompt using persona configuration data
+	assistantMessage := "" // builld assistant message using last N messages and summary
 	userMessage := req.Message
 
 	responseMessage, _, chatErr := openaiadapter.Chat(ctx, systemMessage, assistantMessage, userMessage)
