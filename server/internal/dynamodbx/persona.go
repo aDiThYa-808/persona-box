@@ -2,6 +2,7 @@ package dynamodbx
 
 import (
 	"context"
+	"errors"
 	"strconv"
 
 	"github.com/aDiThYa-808/persona-box/internal/dynamodbx/models"
@@ -43,6 +44,7 @@ func CreateNewPersona(ctx context.Context, persona models.Persona) error {
 			"ResponseLength":     &types.AttributeValueMemberS{Value: persona.ResponseLength},
 			"CreatedAt":          &types.AttributeValueMemberS{Value: persona.CreatedAt},
 		},
+		ConditionExpression: aws.String("attribute_not_exists(PersonaID)"),
 	}
 
 	_, putErr := DB.PutItem(ctx, putParams)
@@ -81,4 +83,29 @@ func GetUsersPersonas(ctx context.Context, userID string) ([]models.PersonaList,
 	}
 
 	return personas, nil
+}
+
+func GetPersonaByPersonaID(ctx context.Context, personaID string) (models.Persona, error) {
+	getParams := &dynamodb.GetItemInput{
+		TableName: aws.String("Persona"),
+		Key: map[string]types.AttributeValue{
+			"PersonaID": &types.AttributeValueMemberS{Value: personaID},
+		},
+	}
+
+	resp, getErr := DB.GetItem(ctx, getParams)
+	if getErr != nil {
+		return models.Persona{}, nil
+	}
+	if resp.Item == nil {
+		return models.Persona{}, errors.New("persona doesnt exist")
+	}
+
+	persona := models.Persona{}
+	unmarshallErr := attributevalue.UnmarshalMap(resp.Item, &persona)
+	if unmarshallErr != nil {
+		return models.Persona{}, unmarshallErr
+	}
+
+	return persona, nil
 }
