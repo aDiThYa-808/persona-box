@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 
@@ -52,12 +53,30 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 
 	response := ChatResponse{}
 
-	//if client didnt send a session_id, it means they want to create a new chat session.
+	persona, getErr := dynamodbx.GetPersonaByPersonaID(ctx, req.PersonaID)
+	if getErr != nil {
+		log.Println(getErr)
+		httpx.WriteJSONError(w, "persona doesnt exist", http.StatusNotFound)
+		return
+	}
+
+	systemPrompt := openaiadapter.CreateSystemPrompt(persona)
+	assistantMessage := ""
+	userMessage := req.Message
+
+	resp, tokensUsed, chatErr := openaiadapter.Chat(ctx, systemPrompt, assistantMessage, userMessage)
+	if chatErr != nil {
+		log.Println(chatErr)
+		httpx.WriteJSONError(w, "failed to access llm", http.StatusInternalServerError)
+		return
+	}
+
 	if req.SessionID == "" {
-		title, summary, chatErr := openaiadapter.GenerateTitleAndSummary(ctx, req.Message)
-		if chatErr != nil {
-			title = "New Chat"
-			summary = req.Message
+		title, summary, err := openaiadapter.GenerateTitleAndSummary(ctx, "")
+		if err != nil {
+			log.Println(err)
+			title = persona.PersonaName + " - New Chat"
+			summary = userMessage + "." + resp
 		}
 
 		chatSession := models.ChatSession{
@@ -66,35 +85,28 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 			Title:        title,
 			CreatedAt:    time.Now().UTC().Format(time.RFC3339),
 			UpdatedAt:    time.Now().UTC().Format(time.RFC3339),
-			MessageCount: 0,
-			TokenCount:   0,
+			MessageCount: 1,
+			TokenCount:   int(tokensUsed),
 			Summary:      summary,
 		}
 
 		createErr := dynamodbx.CreateNewChatSession(ctx, chatSession)
 		if createErr != nil {
-			httpx.WriteJSONError(w, "failed to create new chat", http.StatusInternalServerError)
+			log.Println(createErr)
+			httpx.WriteJSONError(w, "couldnt create chat session", http.StatusInternalServerError)
 			return
 		}
 
 		response.SessionID = chatSession.SessionID
 		response.Title = chatSession.Title
+	} else {
+		// update the message count and tokens used for the existing session
+		// update summary after every N number of messages. N tbd
 	}
 
-	// if message count or tokensUsed crosses the limit, end the chat session
-	// after a certain interval of message count, regenerate chat summary
+	// store both the user and assistant message in the messages tables
 
-	systemMessage := ""    // build the system prompt using persona configuration data
-	assistantMessage := "" // builld assistant message using last N messages and summary
-	userMessage := req.Message
-
-	responseMessage, _, chatErr := openaiadapter.Chat(ctx, systemMessage, assistantMessage, userMessage)
-	if chatErr != nil {
-		httpx.WriteJSONError(w, "failed to access llm", http.StatusInternalServerError)
-		return
-	}
-
-	response.Response = responseMessage
+	response.Response = resp
 
 	httpx.WriteJSONSuccess(w, response)
 }
