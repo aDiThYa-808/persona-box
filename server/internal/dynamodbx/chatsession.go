@@ -23,6 +23,7 @@ func CreateNewChatSession(ctx context.Context, session models.ChatSession) error
 			"TokenCount":   &types.AttributeValueMemberN{Value: strconv.Itoa(session.TokenCount)},
 			"Summary":      &types.AttributeValueMemberS{Value: session.Summary},
 		},
+		ConditionExpression: aws.String("attribute_not_exists(SessionID)"),
 	}
 
 	_, putErr := DB.PutItem(ctx, putParams)
