@@ -53,9 +53,9 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 
 	response := ChatResponse{}
 
-	persona, getErr := dynamodbx.GetPersonaByPersonaID(ctx, req.PersonaID)
-	if getErr != nil {
-		log.Println(getErr)
+	persona, getPersonaErr := dynamodbx.GetPersonaByPersonaID(ctx, req.PersonaID)
+	if getPersonaErr != nil {
+		log.Println(getPersonaErr)
 		httpx.WriteJSONError(w, "persona doesnt exist", http.StatusNotFound)
 		return
 	}
@@ -100,7 +100,17 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 		response.SessionID = chatSession.SessionID
 		response.Title = chatSession.Title
 	} else {
-		// update the message count and tokens used for the existing session
+		chatSession, getChatSessionErr := dynamodbx.GetChatSessionBySessionID(ctx, req.SessionID)
+		if getChatSessionErr != nil {
+			httpx.WriteJSONError(w, "chat session not found", http.StatusNotFound)
+			return
+		}
+
+		if chatSession.TokenCount > 7000 {
+			httpx.WriteJSONError(w, "chat limit reached", http.StatusTooManyRequests)
+			return
+		}
+
 		// update summary after every N number of messages. N tbd
 	}
 
