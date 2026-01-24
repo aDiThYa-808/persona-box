@@ -13,6 +13,8 @@ export async function POST(event: RequestEvent) {
 			headers['Cookie'] = cookies;
 		}
 
+		console.log(JSON.stringify(rBody))
+
 		const res = await fetch(`${invokeUrl}/chat`, {
 			method: 'POST',
 			headers: headers,
@@ -20,6 +22,7 @@ export async function POST(event: RequestEvent) {
 		});
 
 		if (!res.ok) {
+			console.log(await res.json())
 			throw error(res.status);
 		}
 
