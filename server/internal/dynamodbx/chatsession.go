@@ -61,3 +61,29 @@ func GetChatSessionBySessionID(ctx context.Context, sessionID string) (chatSessi
 
 	return session, nil
 }
+
+func UpdateSessionMessageAndTokenCount(ctx context.Context, sessionID string, updatedAt string, messageCount int, tokensUsed int) error {
+	updateExpression := "SET UpdatedAt = :now ADD MessageCount :msgcount, TokenCount :tkncount"
+	attributeValues := map[string]types.AttributeValue{
+		":now":      &types.AttributeValueMemberS{Value: updatedAt},
+		":msgcount": &types.AttributeValueMemberN{Value: strconv.Itoa(messageCount)},
+		":tkncount": &types.AttributeValueMemberN{Value: strconv.Itoa(tokensUsed)},
+	}
+
+	updateParams := &dynamodb.UpdateItemInput{
+		TableName: aws.String("ChatSession"),
+		Key: map[string]types.AttributeValue{
+			"SessionID": &types.AttributeValueMemberS{Value: sessionID},
+		},
+		UpdateExpression:          aws.String(updateExpression),
+		ExpressionAttributeValues: attributeValues,
+		ConditionExpression:       aws.String("attribute_exists(SessionID)"),
+	}
+
+	_, updateErr := DB.UpdateItem(ctx, updateParams)
+	if updateErr != nil {
+		return updateErr
+	}
+
+	return nil
+}
