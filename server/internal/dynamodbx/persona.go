@@ -85,17 +85,18 @@ func GetUsersPersonas(ctx context.Context, userID string) ([]models.PersonaList,
 	return personas, nil
 }
 
-func GetPersonaByPersonaID(ctx context.Context, personaID string) (models.Persona, error) {
+func GetPersonaByPersonaID(ctx context.Context, userID string, personaID string) (models.Persona, error) {
 	getParams := &dynamodb.GetItemInput{
 		TableName: aws.String("Persona"),
 		Key: map[string]types.AttributeValue{
 			"PersonaID": &types.AttributeValueMemberS{Value: personaID},
+			"UserID":    &types.AttributeValueMemberS{Value: userID},
 		},
 	}
 
 	resp, getErr := DB.GetItem(ctx, getParams)
 	if getErr != nil {
-		return models.Persona{}, nil
+		return models.Persona{}, getErr
 	}
 	if resp.Item == nil {
 		return models.Persona{}, errors.New("persona doesnt exist")
