@@ -1,13 +1,16 @@
 <script lang="ts">
 	import type { Chat } from '$lib/types/chat';
 
-    export let startNewChat : () => void
+	export let startNewChat: (message: string) => void;
 	export let personaName;
-	export let chatList: Chat[]
+	export let chatList: Chat[];
 
-    function handleNewChat(){
-        startNewChat()
-    }
+	let message = ""
+
+	function handleNewChat() {
+		startNewChat(message);
+		message = ""
+	}
 </script>
 
 <div class="flex h-screen flex-col bg-background text-text lg:ml-72">
@@ -19,14 +22,22 @@
 	<!-- Content -->
 	<div class="flex-1 overflow-y-auto px-6 py-8">
 		<div class="mx-auto max-w-3xl">
-			<!-- New Chat Button -->
-			<button
-				class="mb-8 w-full rounded-2xl border border-white/10 bg-card px-4 py-3 text-center text-lg text-text transition hover:bg-card/80"
-                on:click={handleNewChat}
-                on:keydown={(e)=> e.key === "Enter" && handleNewChat()}
-			>
-				Start a new chat
-			</button>
+			<!-- Message Input Container -->
+			<div class="mb-8 flex w-full gap-2">
+				<input
+					bind:value={message}
+					type="text"
+					placeholder="Type your message..."
+					class="flex-1 rounded-2xl border border-white/10 bg-card px-4 py-3 text-lg text-text transition focus:border-white/20 focus:outline-none"
+					on:keydown={(e) => e.key === 'Enter' && handleNewChat()}
+				/>
+				<button
+					class="rounded-2xl border border-white/10 bg-card px-6 py-3 text-lg text-text transition hover:bg-card/80"
+					on:click={handleNewChat}
+				>
+					Send
+				</button>
+			</div>
 
 			{#if chatList.length > 0}
 				<!-- Chats Label -->
@@ -34,9 +45,7 @@
 				<!-- Chat List -->
 				<div>
 					{#each chatList as chat}
-						<div
-							class="cursor-pointer border-b border-white/10 py-4 transition hover:opacity-80"
-						>
+						<div class="cursor-pointer border-b border-white/10 py-4 transition hover:opacity-80">
 							<div class="text-lg font-semibold text-text">{chat.title}</div>
 							<div class="truncate text-sm text-text-muted">{chat.lastMessage}</div>
 						</div>
