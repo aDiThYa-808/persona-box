@@ -14,10 +14,15 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	claims, validateErr := jwtx.ValidateAccessToken(accessToken)
+	_, validateErr := jwtx.ValidateAccessToken(accessToken)
 	if validateErr != nil {
 		httpx.WriteJSONError(w, "unauthorized", http.StatusUnauthorized)
 		return
 	}
-	w.Write([]byte("OK" + " " + claims.Email + "\n"))
+
+	resp := map[string]string{
+		"message": "OK",
+	}
+
+	httpx.WriteJSONSuccess(w, resp)
 }
