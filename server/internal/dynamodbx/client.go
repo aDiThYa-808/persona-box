@@ -8,9 +8,11 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
+// Global dynamodb client variable
 var DB *dynamodb.Client
 
-func Init() {
+// Initializes dynamodb client
+func InitializeDynamoDBClient() {
 	ctx := context.Background()
 
 	cfg, cfgErr := config.LoadDefaultConfig(

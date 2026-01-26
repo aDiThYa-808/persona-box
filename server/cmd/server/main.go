@@ -36,10 +36,10 @@ func init() {
 	}
 
 	//create dynamodb client
-	dynamodbx.Init()
+	dynamodbx.InitializeDynamoDBClient()
 
 	//create openai client
-	openaiadapter.Init()
+	openaiadapter.InitializeOpenAIClient()
 
 	// Fetch and hold google's JWKS for verification
 	var jwksErr error

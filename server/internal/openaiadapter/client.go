@@ -7,9 +7,11 @@ import (
 	"github.com/openai/openai-go/v3/option"
 )
 
+// Global openai client variable
 var openaiClient openai.Client
 
-func Init() {
+// Initializes openai client
+func InitializeOpenAIClient() {
 	openaiKey := os.Getenv("OPENAI_SECRET_KEY")
 	if openaiKey == "" {
 		panic("open ai key not found")
