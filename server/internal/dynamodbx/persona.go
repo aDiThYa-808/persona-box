@@ -85,6 +85,9 @@ func GetUsersPersonas(ctx context.Context, userID string) ([]models.PersonaList,
 	return personas, nil
 }
 
+/*
+Returns the item from Persona table that has the same PersonID and UserID primary key as the ones provided.
+*/
 func GetPersonaByPersonaID(ctx context.Context, userID string, personaID string) (models.Persona, error) {
 	getParams := &dynamodb.GetItemInput{
 		TableName: aws.String("Persona"),

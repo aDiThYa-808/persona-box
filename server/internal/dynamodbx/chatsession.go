@@ -12,6 +12,10 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
+/*
+Creates a new item in the ChatSession table if it doesnt already exist.
+Returns error if it fails to create the item.
+*/
 func CreateNewChatSession(ctx context.Context, session models.ChatSession) error {
 	putParams := &dynamodb.PutItemInput{
 		TableName: aws.String("ChatSession"),
@@ -36,6 +40,9 @@ func CreateNewChatSession(ctx context.Context, session models.ChatSession) error
 	return nil
 }
 
+/*
+Returns the item from ChatSession table that has the same SessionID as provided.
+*/
 func GetChatSessionBySessionID(ctx context.Context, sessionID string) (chatSession models.ChatSession, error error) {
 	getParams := &dynamodb.GetItemInput{
 		TableName: aws.String("ChatSession"),
@@ -62,6 +69,10 @@ func GetChatSessionBySessionID(ctx context.Context, sessionID string) (chatSessi
 	return session, nil
 }
 
+/*
+Updates 'UpdatedAt', 'MessageCount' and 'TokenCount' of the ChatSession item with the provided SessionID.
+Returns an error if update fails.
+*/
 func UpdateSessionMessageAndTokenCount(ctx context.Context, sessionID string, updatedAt string, messageCount int, tokensUsed int) error {
 	updateExpression := "SET UpdatedAt = :now ADD MessageCount :msgcount, TokenCount :tkncount"
 	attributeValues := map[string]types.AttributeValue{
