@@ -41,13 +41,14 @@ func CreateNewChatSession(ctx context.Context, session models.ChatSession) error
 }
 
 /*
-Returns the item from ChatSession table that has the same SessionID as provided.
+Returns the item from ChatSession table that has the same SessionID and PersonaID as provided.
 */
-func GetChatSessionBySessionID(ctx context.Context, sessionID string) (chatSession models.ChatSession, error error) {
+func GetChatSessionByID(ctx context.Context, personaID string, sessionID string) (chatSession models.ChatSession, error error) {
 	getParams := &dynamodb.GetItemInput{
 		TableName: aws.String("ChatSession"),
 		Key: map[string]types.AttributeValue{
 			"SessionID": &types.AttributeValueMemberS{Value: sessionID},
+			"PersonaID": &types.AttributeValueMemberS{Value: personaID},
 		},
 	}
 
@@ -73,7 +74,7 @@ func GetChatSessionBySessionID(ctx context.Context, sessionID string) (chatSessi
 Updates 'UpdatedAt', 'MessageCount' and 'TokenCount' of the ChatSession item with the provided SessionID.
 Returns an error if update fails.
 */
-func UpdateSessionMessageAndTokenCount(ctx context.Context, sessionID string, updatedAt string, messageCount int, tokensUsed int) error {
+func UpdateSessionMessageAndTokenCount(ctx context.Context, personaID string, sessionID string, updatedAt string, messageCount int, tokensUsed int) error {
 	updateExpression := "SET UpdatedAt = :now ADD MessageCount :msgcount, TokenCount :tkncount"
 	attributeValues := map[string]types.AttributeValue{
 		":now":      &types.AttributeValueMemberS{Value: updatedAt},
@@ -85,6 +86,7 @@ func UpdateSessionMessageAndTokenCount(ctx context.Context, sessionID string, up
 		TableName: aws.String("ChatSession"),
 		Key: map[string]types.AttributeValue{
 			"SessionID": &types.AttributeValueMemberS{Value: sessionID},
+			"PersonaID": &types.AttributeValueMemberS{Value: personaID},
 		},
 		UpdateExpression:          aws.String(updateExpression),
 		ExpressionAttributeValues: attributeValues,
