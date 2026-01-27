@@ -35,6 +35,7 @@ export async function POST(event: RequestEvent) {
 		return new Response(JSON.stringify(data), { status: 200 });
 	} catch (err) {
 		if (isHttpError(err)) {
+			console.log(err)
 			throw err;
 		}
 		console.log(err);
