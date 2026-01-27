@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -49,7 +50,8 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
-	ctx := r.Context()
+	ctx, cancel := context.WithTimeout(r.Context(), 120*time.Second)
+	defer cancel()
 
 	response := ChatResponse{}
 
@@ -100,7 +102,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 		response.SessionID = chatSession.SessionID
 		response.Title = chatSession.Title
 	} else {
-		chatSession, getChatSessionErr := dynamodbx.GetChatSessionBySessionID(ctx, req.SessionID)
+		chatSession, getChatSessionErr := dynamodbx.GetChatSessionByID(ctx, req.PersonaID, req.SessionID)
 		if getChatSessionErr != nil {
 			log.Println(getChatSessionErr)
 			httpx.WriteJSONError(w, "chat session not found", http.StatusNotFound)
@@ -114,7 +116,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 
 		// update summary after every N number of messages. N tbd
 
-		updateErr := dynamodbx.UpdateSessionMessageAndTokenCount(ctx, chatSession.SessionID, time.Now().UTC().Format(time.RFC3339), 2, int(tokensUsed))
+		updateErr := dynamodbx.UpdateSessionMessageAndTokenCount(ctx, chatSession.PersonaID, chatSession.SessionID, time.Now().UTC().Format(time.RFC3339), 2, int(tokensUsed))
 		if updateErr != nil {
 			log.Println(updateErr)
 			httpx.WriteJSONError(w, "failed to update chat session", http.StatusInternalServerError)
