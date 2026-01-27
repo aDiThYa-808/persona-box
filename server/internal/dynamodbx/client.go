@@ -18,6 +18,7 @@ func InitializeDynamoDBClient() {
 	cfg, cfgErr := config.LoadDefaultConfig(
 		ctx,
 		config.WithRegion("eu-north-1"),
+		config.WithRetryMaxAttempts(3),
 	)
 
 	if cfgErr != nil {
