@@ -1,42 +1,61 @@
 <script lang="ts">
-	import type {Chat, NewChatResponse} from '$lib/types/chat.ts'; 
-    import Chatlist from '$lib/components/chatlist.svelte';
+	import type { Chat, NewChatResponse } from '$lib/types/chat.ts';
+	import Chatlist from '$lib/components/chatlist.svelte';
+    import Create from '$lib/components/create.svelte';
 	import { personas } from '../../../stores/personas.js';
-	import { goto } from '$app/navigation';
+	import { goto, replaceState } from '$app/navigation';
 	import { resolve } from '$app/paths';
+	import type { PersonaData, PersonaList } from '$lib/types/persona.js';
+	import { page } from '$app/stores';
 
-    export let data
-    $: personaName = $personas.find(p=>p.persona_id === data.personaid)?.name
-    let chatList: Chat[] = []
+	export let data;
+	$: personaName = $personas.find((p) => p.persona_id === data.personaid)?.name;
+	let chatList: Chat[] = [];
 
-    async function startNewChat(message: string){
-        try{
-            const body = JSON.stringify({"persona_id":data.personaid, "message":message})
-            const res = await fetch('/api/chat',{
-                method:'POST',
-                headers: {
-                    'Content-Type':'application/json'
-                },
-                body: body
+	async function createPersona(data: PersonaData) {
+		try {
+			const res = await fetch(`/api/create-persona`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(data)
+			});
+
+			if (!res.ok) {
+				throw new Error(`HTTP Error. Status: ${res.status}`);
+			}
+
+			const persona: PersonaList = await res.json();
+
+			// add the new persona to the personas store and sort the entire array using created_at
+			personas.update((current) =>
+				[...current, persona].sort((a, b) => b.created_at.localeCompare(a.created_at))
+			);
+
+		    await goto(`/chat/${persona.persona_id}`,{
+                noScroll:false,
+                replaceState:false,
             })
+		} catch (err) {
+			console.log(err);
+		}
+	}
 
-            if(!res.ok){
-                const errorData = await res.json()
-                throw new Error(`HTTP error. status:${res.status}; message:${errorData.error}`)
-            }
-
-            const chatResponse : NewChatResponse = await res.json()
-            console.log(chatResponse)
-
-            goto(resolve(`/chat/${data.personaid}/${chatResponse.session_id}`),{
-				replaceState:true,
-				noScroll:false
-			})
-
-        }catch(err){
-            console.log(err)
-        }
-    }
+	async function startNewChat(message: string) {
+		goto(`/chat/${data.personaid}/new-chat`, {
+			replaceState: false,
+			noScroll: false,
+			state: {
+				message: message
+			}
+		});
+	}
+    
 </script>
-<Chatlist personaName={personaName} chatList={chatList} {startNewChat}/>
 
+{#if data.personaid == "new-persona"}
+    <Create {createPersona}/>
+{:else}
+<Chatlist {personaName} {chatList} {startNewChat} />
+{/if}
