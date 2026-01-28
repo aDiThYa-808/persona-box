@@ -5,7 +5,7 @@ export interface Chat {
 }
 
 export interface NewChatResponse {
-	session_id: string
-	title: string
+	session_id?: string
+	title?: string
 	response: string
 }
