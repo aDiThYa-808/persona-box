@@ -39,7 +39,7 @@
 				throw error(500, 'Login failed');
 			}
 
-			await goto('/chat', {
+			await goto('/chat/new-persona', {
 				replaceState: true,
 				noScroll: false
 			});
