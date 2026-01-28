@@ -2,7 +2,7 @@ import { error, redirect } from '@sveltejs/kit';
 import type { User } from '$lib/types/user';
 import type { LayoutServerLoad } from './$types';
 
-export const load: LayoutServerLoad = async ({ locals, fetch }) => {
+export const load: LayoutServerLoad = async ({ locals, fetch, params }) => {
 	if (!locals.user) {
 		throw redirect(302, '/login');
 	}
@@ -13,14 +13,16 @@ export const load: LayoutServerLoad = async ({ locals, fetch }) => {
 			throw error(res.status, 'user not found');
 		}
 
-		const data = await res.json();
+		const userData = await res.json();
 
-		const user: User = {
-			name: data.display_name,
-			email: data.email
+		const pageData = {
+			name: userData.display_name,
+			email: userData.email,
+			personaid : params.personaid,
+			chatid: params.chatid
 		};
 
-		return user;
+		return pageData;
 	} catch (err) {
 		throw redirect(302, '/login');
 	}
