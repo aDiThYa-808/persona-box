@@ -50,7 +50,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
-	ctx, cancel := context.WithTimeout(r.Context(), 120*time.Second)
+	ctx, cancel := context.WithTimeout(r.Context(), 180*time.Second)
 	defer cancel()
 
 	response := ChatResponse{}
@@ -63,8 +63,8 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	systemPrompt := openaiadapter.CreateSystemPrompt(persona)
-	assistantMessage := ""
 	userMessage := req.Message
+	assistantMessage := openaiadapter.CreateAssistantPrompt(userMessage, userMessage) // FIX THIS ASAP. USE LAST N MESSAGES AND SUMMARY FROM TABLE
 
 	resp, tokensUsed, chatErr := openaiadapter.Chat(ctx, systemPrompt, assistantMessage, userMessage)
 	if chatErr != nil {
