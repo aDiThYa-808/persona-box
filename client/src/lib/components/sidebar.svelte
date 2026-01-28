@@ -73,7 +73,7 @@
 		<button
 			class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-text transition-colors hover:bg-background"
 			on:click={() => {
-				goto(resolve('/chat/new'));
+				goto(resolve('/chat/new-persona'));
 				isOpen = false;
 			}}
 		>
