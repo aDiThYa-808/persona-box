@@ -40,7 +40,7 @@
 			}
 
 			await goto('/chat/new-persona', {
-				replaceState: true,
+				replaceState: false,
 				noScroll: false
 			});
 		} catch (err: unknown) {
