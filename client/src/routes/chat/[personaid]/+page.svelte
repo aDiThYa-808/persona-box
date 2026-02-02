@@ -2,15 +2,17 @@
 	import type { Chat, NewChatResponse } from '$lib/types/chat.ts';
 	import Chatlist from '$lib/components/chatlist.svelte';
     import Create from '$lib/components/create.svelte';
-	import { personas } from '../../../stores/personas.js';
+	import { chats, personas } from '../../../stores/personas.js';
 	import { goto, replaceState } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import type { PersonaData, PersonaList } from '$lib/types/persona.js';
-	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 
 	export let data;
+	$: personaid = data.personaid
 	$: personaName = $personas.find((p) => p.persona_id === data.personaid)?.name;
-	let chatList: Chat[] = [];
+	$: chatSessions = data.chatSessions
+	$: if(chatSessions) chats.set(chatSessions)
 
 	async function createPersona(data: PersonaData) {
 		try {
@@ -57,5 +59,5 @@
 {#if data.personaid == "new-persona"}
     <Create {createPersona}/>
 {:else}
-<Chatlist {personaName} {chatList} {startNewChat} />
+<Chatlist {personaName} {startNewChat} />
 {/if}
