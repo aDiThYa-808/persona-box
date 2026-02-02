@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { Chat } from '$lib/types/chat';
+	import { chats } from '../../stores/personas';
 
 	export let startNewChat: (message: string) => void;
 	export let personaName;
-	export let chatList: Chat[];
 
 	let message = ""
 
@@ -39,15 +39,14 @@
 				</button>
 			</div>
 
-			{#if chatList.length > 0}
+			{#if $chats.length > 0}
 				<!-- Chats Label -->
 				<h3 class="mb-4 text-sm font-medium text-text-muted">Chats</h3>
 				<!-- Chat List -->
 				<div>
-					{#each chatList as chat}
+					{#each $chats as chat}
 						<div class="cursor-pointer border-b border-white/10 py-4 transition hover:opacity-80">
 							<div class="text-lg font-semibold text-text">{chat.title}</div>
-							<div class="truncate text-sm text-text-muted">{chat.lastMessage}</div>
 						</div>
 					{/each}
 				</div>
