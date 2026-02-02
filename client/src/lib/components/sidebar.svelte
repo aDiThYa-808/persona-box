@@ -22,7 +22,10 @@
 	});
 
 	function goToPersonaPage(id: string) {
-		goto(resolve(`/chat/${id}`));
+		goto(`/chat/${id}`,{
+			replaceState:false,
+			noScroll:false
+		});
 	}
 </script>
 
