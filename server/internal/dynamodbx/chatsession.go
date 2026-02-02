@@ -70,6 +70,34 @@ func GetChatSessionByID(ctx context.Context, personaID string, sessionID string)
 	return session, nil
 }
 
+func GetAllChatSessionsOfPersona(ctx context.Context, personaid string) ([]models.ChatSessionList, error) {
+	queryParams := &dynamodb.QueryInput{
+		TableName:              aws.String("ChatSession"),
+		KeyConditionExpression: aws.String("PersonaID = :pid"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":pid": &types.AttributeValueMemberS{Value: personaid},
+		},
+	}
+	resp, queryErr := DB.Query(ctx, queryParams)
+	if queryErr != nil {
+		return []models.ChatSessionList{}, queryErr
+	}
+	if resp.Items == nil {
+		return []models.ChatSessionList{}, errors.New("no chat sessions found")
+	}
+
+	chatSessions := make([]models.ChatSessionList, len(resp.Items))
+
+	for i, item := range resp.Items {
+		unmarshallErr := attributevalue.UnmarshalMap(item, &chatSessions[i])
+		if unmarshallErr != nil {
+			return []models.ChatSessionList{}, unmarshallErr
+		}
+	}
+
+	return chatSessions, nil
+}
+
 /*
 Updates 'UpdatedAt', 'MessageCount' and 'TokenCount' of the ChatSession item with the provided SessionID.
 Returns an error if update fails.
