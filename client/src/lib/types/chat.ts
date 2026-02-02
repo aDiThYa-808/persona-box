@@ -1,7 +1,7 @@
 export interface Chat {
 	session_id: string;
 	title: string;
-	lastMessage: string
+	updated_at: string
 }
 
 export interface NewChatResponse {
