@@ -10,3 +10,9 @@ type ChatSession struct {
 	TokenCount   int    `json:"token_count"`
 	Summary      string `json:"summary"`
 }
+
+type ChatSessionList struct {
+	SessionID string `json:"session_id"`
+	Title     string `json:"title"`
+	UpdatedAt string `json:"updated_at"`
+}
