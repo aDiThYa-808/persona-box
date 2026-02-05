@@ -19,12 +19,14 @@ type ChatRequest struct {
 	SessionID string `json:"session_id"`
 	PersonaID string `json:"persona_id"`
 	Message   string `json:"message"`
+	CreatedAt string `json:"created_at"`
 }
 
 type ChatResponse struct {
 	SessionID string `json:"session_id"`
 	Title     string `json:"title"`
 	Response  string `json:"response"`
+	Timestamp string `json:"timestamp"`
 }
 
 func ChatHandler(w http.ResponseWriter, r *http.Request) {
@@ -130,15 +132,15 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 
 	um := models.ChatMessage{
 		SessionID: sessionID,
-		CreatedAt: time.Now().UTC().Format(time.RFC3339),
-		Sender:    "user",
-		Content:   userMessage,
+		CreatedAt: req.CreatedAt,
+		Role:      "user",
+		Message:   userMessage,
 	}
 	am := models.ChatMessage{
 		SessionID: sessionID,
 		CreatedAt: time.Now().UTC().Format(time.RFC3339),
-		Sender:    "assistant",
-		Content:   assistantMessage,
+		Role:      "assistant",
+		Message:   assistantMessage,
 	}
 	userMessageErr := dynamodbx.StoreChatMessage(ctx, um)
 	assistantMessageErr := dynamodbx.StoreChatMessage(ctx, am)
@@ -154,6 +156,8 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 		httpx.WriteJSONError(w, "failed to store message", http.StatusInternalServerError)
 		return
 	}
+
+	response.Timestamp = am.CreatedAt
 
 	response.Response = resp
 
