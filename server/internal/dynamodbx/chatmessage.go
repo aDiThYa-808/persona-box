@@ -17,8 +17,8 @@ func StoreChatMessage(ctx context.Context, message models.ChatMessage) error {
 		Item: map[string]types.AttributeValue{
 			"SessionID": &types.AttributeValueMemberS{Value: message.SessionID},
 			"CreatedAt": &types.AttributeValueMemberS{Value: message.CreatedAt},
-			"Sender":    &types.AttributeValueMemberS{Value: message.Sender},
-			"Content":   &types.AttributeValueMemberS{Value: message.Content},
+			"Role":      &types.AttributeValueMemberS{Value: message.Role},
+			"Message":   &types.AttributeValueMemberS{Value: message.Message},
 		},
 	}
 
