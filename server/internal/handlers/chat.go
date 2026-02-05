@@ -73,7 +73,9 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.SessionID == "" {
+	sessionID := req.SessionID
+
+	if sessionID == "" {
 		title, summary, err := openaiadapter.GenerateTitleAndSummary(ctx, userMessage)
 		if err != nil {
 			log.Println(err)
@@ -81,8 +83,10 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 			summary = userMessage + "." + resp
 		}
 
+		sessionID = uuid.New().String()
+
 		chatSession := models.ChatSession{
-			SessionID:    uuid.New().String(),
+			SessionID:    sessionID,
 			PersonaID:    req.PersonaID,
 			Title:        title,
 			CreatedAt:    time.Now().UTC().Format(time.RFC3339),
@@ -124,7 +128,32 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// store both the user and assistant message in the messages tables
+	um := models.ChatMessage{
+		SessionID: sessionID,
+		CreatedAt: time.Now().UTC().Format(time.RFC3339),
+		Sender:    "user",
+		Content:   userMessage,
+	}
+	am := models.ChatMessage{
+		SessionID: sessionID,
+		CreatedAt: time.Now().UTC().Format(time.RFC3339),
+		Sender:    "assistant",
+		Content:   assistantMessage,
+	}
+	userMessageErr := dynamodbx.StoreChatMessage(ctx, um)
+	assistantMessageErr := dynamodbx.StoreChatMessage(ctx, am)
+
+	if userMessageErr != nil {
+		log.Println(userMessageErr)
+		httpx.WriteJSONError(w, "failed to store message", http.StatusInternalServerError)
+		return
+	}
+
+	if assistantMessageErr != nil {
+		log.Println(assistantMessageErr)
+		httpx.WriteJSONError(w, "failed to store message", http.StatusInternalServerError)
+		return
+	}
 
 	response.Response = resp
 
