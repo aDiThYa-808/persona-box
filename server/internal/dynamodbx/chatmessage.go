@@ -2,24 +2,23 @@ package dynamodbx
 
 import (
 	"context"
-	"strconv"
+	"errors"
 
 	"github.com/aDiThYa-808/persona-box/internal/dynamodbx/models"
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
-func CreateChatMessage(ctx context.Context, message models.ChatMessage) error {
+func StoreChatMessage(ctx context.Context, message models.ChatMessage) error {
 	putParams := &dynamodb.PutItemInput{
 		TableName: aws.String("ChatMessage"),
 		Item: map[string]types.AttributeValue{
-			"SessionID":    &types.AttributeValueMemberS{Value: message.SessionID},
-			"CreatedAt":    &types.AttributeValueMemberS{Value: message.CreatedAt},
-			"Sender":       &types.AttributeValueMemberS{Value: message.Sender},
-			"Content":      &types.AttributeValueMemberS{Value: message.Content},
-			"TokensUsed":   &types.AttributeValueMemberN{Value: strconv.Itoa(message.TokensUsed)},
-			"ModelVersion": &types.AttributeValueMemberS{Value: message.ModelVersion},
+			"SessionID": &types.AttributeValueMemberS{Value: message.SessionID},
+			"CreatedAt": &types.AttributeValueMemberS{Value: message.CreatedAt},
+			"Sender":    &types.AttributeValueMemberS{Value: message.Sender},
+			"Content":   &types.AttributeValueMemberS{Value: message.Content},
 		},
 	}
 
@@ -30,4 +29,33 @@ func CreateChatMessage(ctx context.Context, message models.ChatMessage) error {
 	}
 
 	return nil
+}
+
+func GetAllSessionMessages(ctx context.Context, sessionid string) ([]models.ChatMessage, error) {
+	queryParams := &dynamodb.QueryInput{
+		TableName:              aws.String("ChatMessage"),
+		KeyConditionExpression: aws.String("SessionID = :sid"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":sid": &types.AttributeValueMemberS{Value: sessionid},
+		},
+	}
+
+	resp, queryErr := DB.Query(ctx, queryParams)
+	if queryErr != nil {
+		return []models.ChatMessage{}, queryErr
+	}
+	if resp.Items == nil {
+		return []models.ChatMessage{}, errors.New("no messages found")
+	}
+
+	messages := make([]models.ChatMessage, len(resp.Items))
+
+	for i := range resp.Items {
+		unmarshalErr := attributevalue.UnmarshalMap(resp.Items[i], &messages)
+		if unmarshalErr != nil {
+			return []models.ChatMessage{}, unmarshalErr
+		}
+	}
+
+	return messages, nil
 }
