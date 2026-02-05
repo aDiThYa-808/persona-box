@@ -5,34 +5,39 @@
 	import type { NewChatResponse } from '$lib/types/chat.js';
 	import type { Message } from '$lib/types/message';
 	import { onMount } from 'svelte';
-	import { personas } from '../../../../stores/personas.js';
+	import { messages, personas } from '../../../../stores/personas.js';
 
 	export let data;
 	$: personaName = $personas.find((p) => p.persona_id === data.personaid)?.name;
 	$: chatName = 'New Chat';
 
-	$: title = personaName + " - "+ chatName
+	$: title = personaName + ' - ' + chatName;
 
-	$: chatID = data.chatid
-	let messages: Message[] = [];
+	$: chatID = data.chatid;
+	$: sessionMessages = data.messages;
+	$: if(sessionMessages){
+		messages.set(sessionMessages);
+	} // else show some error
+
 	let loading: boolean = false;
 
-	onMount(async()=>{
-		const firstMessage = $page.state?.message
-		if(firstMessage){
-			sendPrompt(firstMessage)
-			console.log(firstMessage)
+	onMount(async () => {
+		const firstMessage = $page.state?.message;
+		if (firstMessage) {
+			sendPrompt(firstMessage);
+			console.log(firstMessage);
 		} // else do something to show failure
-	})
+	});
 
 	async function sendPrompt(prompt: string) {
-		messages = [...messages, { role: 'user', text: prompt }];
-
+		const createdAt = new Date().toISOString()
+		messages.update((current)=> [...current,{role:"user",message:prompt,created_at: createdAt}])
 		loading = true;
 		try {
-			let body = (chatID != "new-chat" && chatID != "")
-				? JSON.stringify({ session_id: chatID, persona_id: data.personaid, message: prompt })
-				: JSON.stringify({ persona_id: data.personaid, message: prompt });
+			let body =
+				chatID != 'new-chat' && chatID != ''
+					? JSON.stringify({ session_id: chatID, persona_id: data.personaid, message: prompt, created_at:createdAt })
+					: JSON.stringify({ persona_id: data.personaid, message: prompt,created_at : createdAt });
 
 			const response = await fetch(`/api/chat`, {
 				method: 'POST',
@@ -48,20 +53,27 @@
 
 			const chatData: NewChatResponse = await response.json();
 
-			if(chatData.session_id){
-				replaceState(`/chat/${data.personaid}/${chatData.session_id}`, $page.state)
+			if (chatData.session_id) {
+				replaceState(`/chat/${data.personaid}/${chatData.session_id}`, $page.state);
 			}
-			if(chatData.title){
-				chatName = chatData.title
+			if (chatData.title) {
+				chatName = chatData.title;
 			}
 
-			messages = [...messages, { role: 'assistant', text: chatData.response }];
+			messages.update((current)=>[...current, { role: 'assistant', message: chatData.response,created_at:chatData.timestamp }])
 		} catch (err) {
-			messages = [...messages, { role: 'assistant', text: "Something went wrong on our end. Please try sending your message again." }];
+			messages.update((current)=> [
+				...current,
+				{
+					role: 'assistant',
+					message: 'Something went wrong on our end. Please try sending your message again.',
+					created_at: createdAt
+				}
+			]);
 		} finally {
 			loading = false;
 		}
 	}
 </script>
 
-<Chat chatName={title} {messages} {sendPrompt} {loading} />
+<Chat chatName={title} {sendPrompt} {loading} />
