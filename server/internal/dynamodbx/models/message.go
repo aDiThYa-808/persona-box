@@ -1,10 +1,8 @@
 package models
 
 type ChatMessage struct {
-	SessionID    string `json:"session_id"` //PK
-	CreatedAt    string `json:"created_at"` //SK ISO string
-	Sender       string `json:"sender"`
-	Content      string `json:"content"`
-	TokensUsed   int    `json:"tokens_used"`
-	ModelVersion string `json:"model_version"`
+	SessionID string `json:"session_id"` //PK
+	CreatedAt string `json:"created_at"` //SK ISO string
+	Sender    string `json:"sender"`
+	Content   string `json:"content"`
 }
