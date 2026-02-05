@@ -61,6 +61,7 @@ func main() {
 	mux.Handle("/create-persona", http.HandlerFunc(handlers.CreatePersonaHandler))
 	mux.Handle("/personas", http.HandlerFunc(handlers.GetPersonasHandler))
 	mux.Handle("/chat-sessions", http.HandlerFunc(handlers.GetChatSessions))
+	mux.Handle("/messages", http.HandlerFunc(handlers.GetSessionMessages))
 
 	//remove prefix from incoming req url
 	handler := middlewares.StripStagePrefix(mux)
