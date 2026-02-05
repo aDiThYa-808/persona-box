@@ -1,5 +1,4 @@
 <script lang="ts">
-	import type { Chat } from '$lib/types/chat';
 	import { chats } from '../../stores/personas';
 
 	export let startNewChat: (message: string) => void;
