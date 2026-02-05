@@ -8,4 +8,5 @@ export interface NewChatResponse {
 	session_id?: string
 	title?: string
 	response: string
+	timestamp: string
 }
