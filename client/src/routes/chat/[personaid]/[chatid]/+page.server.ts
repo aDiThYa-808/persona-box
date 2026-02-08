@@ -24,7 +24,7 @@ export const load: PageServerLoad = async ({ params, fetch }) => {
 		}
 
 		const sessionMessages: Message[] = await res.json();
-		console.log(sessionMessages)
+		
 		return {
 			messages: sessionMessages.sort((a, b) => b.created_at.localeCompare(a.created_at))
 		};
