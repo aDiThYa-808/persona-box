@@ -130,27 +130,28 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// store user message
 	um := models.ChatMessage{
 		SessionID: sessionID,
 		CreatedAt: req.CreatedAt,
 		Role:      "user",
 		Message:   userMessage,
 	}
-	am := models.ChatMessage{
-		SessionID: sessionID,
-		CreatedAt: time.Now().UTC().Format(time.RFC3339),
-		Role:      "assistant",
-		Message:   assistantMessage,
-	}
 	userMessageErr := dynamodbx.StoreChatMessage(ctx, um)
-	assistantMessageErr := dynamodbx.StoreChatMessage(ctx, am)
-
 	if userMessageErr != nil {
 		log.Println(userMessageErr)
 		httpx.WriteJSONError(w, "failed to store message", http.StatusInternalServerError)
 		return
 	}
 
+	// store assistant response
+	am := models.ChatMessage{
+		SessionID: sessionID,
+		CreatedAt: time.Now().UTC().Format(time.RFC3339),
+		Role:      "assistant",
+		Message:   resp,
+	}
+	assistantMessageErr := dynamodbx.StoreChatMessage(ctx, am)
 	if assistantMessageErr != nil {
 		log.Println(assistantMessageErr)
 		httpx.WriteJSONError(w, "failed to store message", http.StatusInternalServerError)
