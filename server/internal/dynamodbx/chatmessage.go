@@ -50,8 +50,8 @@ func GetAllSessionMessages(ctx context.Context, sessionid string) ([]models.Chat
 
 	messages := make([]models.ChatMessage, len(resp.Items))
 
-	for i := range resp.Items {
-		unmarshalErr := attributevalue.UnmarshalMap(resp.Items[i], &messages)
+	for i, item := range resp.Items {
+		unmarshalErr := attributevalue.UnmarshalMap(item, &messages[i])
 		if unmarshalErr != nil {
 			return []models.ChatMessage{}, unmarshalErr
 		}
