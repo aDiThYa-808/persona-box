@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { onMount } from 'svelte';
-	import { personas } from '../../stores/personas';
+	import { personas } from '../../stores/store';
 
 	export let name: string;
 	export let email: string;

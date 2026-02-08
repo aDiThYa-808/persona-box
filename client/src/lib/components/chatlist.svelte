@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { chats } from '../../stores/personas';
+	import { chats } from '../../stores/store';
 
 	export let startNewChat: (message: string) => void;
 	export let personaName;

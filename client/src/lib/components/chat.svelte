@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Message } from '$lib/types/message';
-	import { messages } from '../../stores/personas';
+	import { messages } from '../../stores/store';
 
 	export let chatName: string;
 	export let loading: boolean;

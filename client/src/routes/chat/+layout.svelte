@@ -2,7 +2,7 @@
 	import Sidebar from '$lib/components/sidebar.svelte';
 	import type { User } from '$lib/types/user';
 	import type { PersonaList } from '$lib/types/persona';
-	import { personas } from '../../stores/personas';
+	import { personas } from '../../stores/store';
 	import { onMount } from 'svelte';
 
 	export let data: User;

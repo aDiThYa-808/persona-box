@@ -2,7 +2,7 @@
 	import type { Chat, NewChatResponse } from '$lib/types/chat.ts';
 	import Chatlist from '$lib/components/chatlist.svelte';
     import Create from '$lib/components/create.svelte';
-	import { chats, personas } from '../../../stores/personas.js';
+	import { chats, personas } from '../../../stores/store.js';
 	import { goto, replaceState } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import type { PersonaData, PersonaList } from '$lib/types/persona.js';
