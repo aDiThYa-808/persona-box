@@ -3,17 +3,18 @@
 	import { page } from '$app/stores';
 	import Chat from '$lib/components/chat.svelte';
 	import type { NewChatResponse } from '$lib/types/chat.js';
-	import type { Message } from '$lib/types/message';
 	import { onMount } from 'svelte';
-	import { messages, personas } from '../../../../stores/personas.js';
+	import { chats, messages, personas } from '../../../../stores/store.js';
 
 	export let data;
-	$: personaName = $personas.find((p) => p.persona_id === data.personaid)?.name;
-	$: chatName = 'New Chat';
-
-	$: title = personaName + ' - ' + chatName;
 
 	$: chatID = data.chatid;
+
+	$: personaName = $personas.find((p) => p.persona_id === data.personaid)?.name;
+	$: chatName = $chats.find((c) => c.session_id === chatID)?.title;
+	$: title = personaName + ' - ' + chatName;
+
+
 	$: sessionMessages = data.messages;
 	$: if(sessionMessages){
 		messages.set(sessionMessages);
@@ -25,7 +26,6 @@
 		const firstMessage = $page.state?.message;
 		if (firstMessage) {
 			sendPrompt(firstMessage);
-			console.log(firstMessage);
 		} // else do something to show failure
 	});
 
@@ -39,6 +39,7 @@
 					? JSON.stringify({ session_id: chatID, persona_id: data.personaid, message: prompt, created_at:createdAt })
 					: JSON.stringify({ persona_id: data.personaid, message: prompt,created_at : createdAt });
 
+			console.log(body)
 			const response = await fetch(`/api/chat`, {
 				method: 'POST',
 				headers: {
@@ -55,6 +56,7 @@
 
 			if (chatData.session_id) {
 				replaceState(`/chat/${data.personaid}/${chatData.session_id}`, $page.state);
+				chatID = chatData.session_id
 			}
 			if (chatData.title) {
 				chatName = chatData.title;
