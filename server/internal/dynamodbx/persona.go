@@ -113,3 +113,26 @@ func GetPersonaByPersonaID(ctx context.Context, userID string, personaID string)
 
 	return persona, nil
 }
+
+func DeletePersona(ctx context.Context, userid string, personaid string) error {
+
+	//delete all chat session of a the persona
+	deleteSessionsErr := DeleteAllSessionsOfAPersona(ctx, personaid)
+	if deleteSessionsErr != nil {
+		return deleteSessionsErr
+	}
+
+	// delete the persona
+	deleteParams := &dynamodb.DeleteItemInput{
+		TableName: aws.String("Persona"),
+		Key: map[string]types.AttributeValue{
+			"UserID":    &types.AttributeValueMemberS{Value: userid},
+			"PersonaID": &types.AttributeValueMemberS{Value: personaid},
+		},
+	}
+	_, deleteErr := DB.DeleteItem(ctx, deleteParams)
+	if deleteErr != nil {
+		return deleteErr
+	}
+	return nil
+}
