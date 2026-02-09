@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { replaceState } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import Chat from '$lib/components/chat.svelte';
 	import type { NewChatResponse } from '$lib/types/chat.js';
 	import { onMount } from 'svelte';
@@ -11,7 +11,7 @@
 	$: chatID = data.chatid;
 
 	$: personaName = $personas.find((p) => p.persona_id === data.personaid)?.name;
-	$: chatName = $chats.find((c) => c.session_id === chatID)?.title;
+	$: chatName = $chats.find((c) => c.session_id === chatID)?.title || "New Chat";
 	$: title = personaName + ' - ' + chatName;
 
 
@@ -23,7 +23,7 @@
 	let loading: boolean = false;
 
 	onMount(async () => {
-		const firstMessage = $page.state?.message;
+		const firstMessage = page.state?.message;
 		if (firstMessage) {
 			sendPrompt(firstMessage);
 		} // else do something to show failure
@@ -55,7 +55,7 @@
 			const chatData: NewChatResponse = await response.json();
 
 			if (chatData.session_id) {
-				replaceState(`/chat/${data.personaid}/${chatData.session_id}`, $page.state);
+				replaceState(`/chat/${data.personaid}/${chatData.session_id}`, page.state);
 				chatID = chatData.session_id
 			}
 			if (chatData.title) {
