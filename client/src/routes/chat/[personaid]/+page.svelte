@@ -1,12 +1,9 @@
 <script lang="ts">
-	import type { Chat, NewChatResponse } from '$lib/types/chat.ts';
 	import Chatlist from '$lib/components/chatlist.svelte';
     import Create from '$lib/components/create.svelte';
 	import { chats, personas } from '../../../stores/store.js';
-	import { goto, replaceState } from '$app/navigation';
-	import { resolve } from '$app/paths';
+	import { goto } from '$app/navigation';
 	import type { PersonaData, PersonaList } from '$lib/types/persona.js';
-	import { onMount } from 'svelte';
 
 	export let data;
 	$: personaid = data.personaid
@@ -53,11 +50,18 @@
 			}
 		});
 	}
+
+	function openChatSession(sessionid:string){
+		goto(`/chat/${data.personaid}/${sessionid}`,{
+			replaceState:false,
+			noScroll:false
+		})
+	}
     
 </script>
 
 {#if data.personaid == "new-persona"}
     <Create {createPersona}/>
 {:else}
-<Chatlist {personaName} {startNewChat} />
+<Chatlist {personaName} {startNewChat} {openChatSession}/>
 {/if}

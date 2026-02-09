@@ -2,6 +2,7 @@
 	import { chats } from '../../stores/store';
 
 	export let startNewChat: (message: string) => void;
+	export let openChatSession: (sessionid: string) => void
 	export let personaName;
 
 	let message = ""
@@ -44,9 +45,12 @@
 				<!-- Chat List -->
 				<div>
 					{#each $chats as chat}
-						<div class="cursor-pointer border-b border-white/10 py-4 transition hover:opacity-80">
+						<button
+							on:click={()=> openChatSession(chat.session_id)}
+							class="w-full cursor-pointer border-b border-white/10 py-4 text-left transition hover:opacity-80"
+						>
 							<div class="text-lg font-semibold text-text">{chat.title}</div>
-						</div>
+						</button>
 					{/each}
 				</div>
 			{:else}
