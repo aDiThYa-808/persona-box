@@ -22,7 +22,7 @@ func GetChatSessions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	personaid := r.URL.Query().Get("personaid")
+	personaid := r.PathValue("id")
 	if personaid == "" {
 		httpx.WriteJSONError(w, "missing personaid", http.StatusBadRequest)
 		return

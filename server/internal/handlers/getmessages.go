@@ -22,7 +22,7 @@ func GetSessionMessages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sessionID := r.URL.Query().Get("sessionid")
+	sessionID := r.PathValue("id")
 	if sessionID == "" {
 		httpx.WriteJSONError(w, "session id not found", http.StatusBadRequest)
 		return
