@@ -128,3 +128,48 @@ func UpdateSessionMessageAndTokenCount(ctx context.Context, personaID string, se
 
 	return nil
 }
+
+func DeleteAllSessionsOfAPersona(ctx context.Context, personaid string) error {
+	queryParams := &dynamodb.QueryInput{
+		TableName:              aws.String("ChatSession"),
+		KeyConditionExpression: aws.String("PersonaID = :pid"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":pid": &types.AttributeValueMemberS{Value: personaid},
+		},
+		ProjectionExpression: aws.String("PersonaID, SessionID"),
+	}
+
+	resp, queryErr := DB.Query(ctx, queryParams)
+	if queryErr != nil {
+		return queryErr
+	}
+
+	for _, item := range resp.Items {
+
+		//first delete all the messages of the session
+		var sessionid string
+		unmarshalErr := attributevalue.Unmarshal(item["SessionID"], &sessionid)
+		if unmarshalErr != nil {
+			return unmarshalErr
+		}
+		deleteMsgErr := DeleteAllMessagesOfASession(ctx, sessionid)
+		if deleteMsgErr != nil {
+			return deleteMsgErr
+		}
+
+		// then delete the session itself
+		deleteParams := &dynamodb.DeleteItemInput{
+			TableName: aws.String("ChatSession"),
+			Key: map[string]types.AttributeValue{
+				"PersonaID": item["PersonaID"],
+				"SessionID": item["SessionID"],
+			},
+		}
+		_, deleteErr := DB.DeleteItem(ctx, deleteParams)
+		if deleteErr != nil {
+			return deleteErr
+		}
+	}
+
+	return nil
+}
