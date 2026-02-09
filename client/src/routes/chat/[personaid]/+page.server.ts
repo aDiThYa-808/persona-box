@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ params, fetch }) => {
 	}
 
 	try {
-		const res = await fetch(`/api/chat-session?personaid=${personaid}`);
+		const res = await fetch(`/api/sessions/${personaid}`);
 
 		if (!res.ok) {
 			const data = await res.json();

@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ params, fetch }) => {
 			};
 		}
 
-		const res = await fetch(`/api/messages?sessionid=${chatId}`);
+		const res = await fetch(`/api/sessions/messages/${chatId}`,{method:"GET"});
 
 		if (!res.ok) {
 			let data = res.json();

@@ -7,7 +7,7 @@ export const load: LayoutServerLoad = async ({ locals, fetch, params }) => {
 		throw redirect(302, '/login');
 	}
 	try {
-		const res = await fetch(`/api/auth/user`);
+		const res = await fetch(`/api/auth/user`,{method:"GET"});
 
 		if (!res.ok) {
 			throw error(res.status, 'user not found');

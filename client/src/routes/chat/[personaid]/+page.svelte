@@ -13,7 +13,7 @@
 
 	async function createPersona(data: PersonaData) {
 		try {
-			const res = await fetch(`/api/create-persona`, {
+			const res = await fetch(`/api/personas`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'

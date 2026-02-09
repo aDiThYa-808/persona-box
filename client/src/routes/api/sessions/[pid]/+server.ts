@@ -6,15 +6,13 @@ export async function GET(events: RequestEvent){
     try{
         const invokeUrl = PUBLIC_AWS_INVOKE_URL
         const cookies = events.request.headers.get("Cookie")
-        const personaid = events.url.searchParams.get("personaid")
-        let headers: Record<string,string> = {
-            'Content-Type':'application/json'
-        }
+        const personaid = events.params.pid
+        let headers: Record<string,string> = {}
         if(cookies){
             headers['Cookie'] = cookies
         }
 
-        const res = await fetch(`${invokeUrl}/chat-sessions?personaid=${personaid}`,{
+        const res = await fetch(`${invokeUrl}/sessions/${personaid}`,{
             method: 'GET',
             headers: headers
         })

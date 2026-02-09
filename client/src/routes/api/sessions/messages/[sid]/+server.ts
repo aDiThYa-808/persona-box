@@ -5,16 +5,13 @@ import { error, isHttpError, type RequestEvent } from "@sveltejs/kit";
 export async function GET(events: RequestEvent){
     try{
         const cookies = events.request.headers.get("Cookie")
-        const sessionid = events.url.searchParams.get("sessionid")
+        const sessionid = events.params.sid
         const invokeUrl = PUBLIC_AWS_INVOKE_URL
-        const headers: Record<string,string> ={
-            'Content-Type':'application/json'
-        }
+        const headers: Record<string,string> = {}
         if(cookies){
             headers['Cookie'] = cookies
         }
-
-        const res = await fetch(`${invokeUrl}/messages?sessionid=${sessionid}`,{
+        const res = await fetch(`${invokeUrl}/messages/${sessionid}`,{
             method:'GET',
             headers:headers
         })

@@ -5,10 +5,14 @@ export async function GET(event: RequestEvent) {
 	try {
 		const invokeUrl = PUBLIC_AWS_INVOKE_URL;
 		const cookies = event.request.headers.get('Cookie');
+		let headers : Record<string,string> = {}
+		if(cookies){
+			headers["Cookie"] = cookies
+		} 
 
 		const res = await fetch(`${invokeUrl}/user`, {
 			method: 'GET',
-			headers: cookies === null ? undefined : { Cookie: cookies }
+			headers: headers
 		});
 
 		if (!res.ok) {
