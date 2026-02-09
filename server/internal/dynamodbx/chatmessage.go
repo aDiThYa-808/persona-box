@@ -59,3 +59,36 @@ func GetAllSessionMessages(ctx context.Context, sessionid string) ([]models.Chat
 
 	return messages, nil
 }
+
+func DeleteAllMessagesOfASession(ctx context.Context, sessionid string) error {
+
+	queryParams := &dynamodb.QueryInput{
+		TableName:              aws.String("ChatMessage"),
+		KeyConditionExpression: aws.String("SessionID = :sid"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":sid": &types.AttributeValueMemberS{Value: sessionid},
+		},
+		ProjectionExpression: aws.String("SessionID, CreatedAt"),
+	}
+
+	resp, queryErr := DB.Query(ctx, queryParams)
+	if queryErr != nil {
+		return queryErr
+	}
+
+	for _, item := range resp.Items {
+		deleteParams := &dynamodb.DeleteItemInput{
+			TableName: aws.String("ChatMessage"),
+			Key: map[string]types.AttributeValue{
+				"SessionID": item["SessionID"],
+				"CreatedAt": item["CreatedAt"],
+			},
+		}
+		_, deleteErr := DB.DeleteItem(ctx, deleteParams)
+		if deleteErr != nil {
+			return deleteErr
+		}
+	}
+
+	return nil
+}
