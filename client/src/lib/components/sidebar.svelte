@@ -3,9 +3,11 @@
 	import { resolve } from '$app/paths';
 	import { onMount } from 'svelte';
 	import { personas } from '../../stores/store';
+	import Trash from '$lib/assets/icons/trash.png'
 
 	export let name: string;
 	export let email: string;
+	export let deletePersona: (personaid: string)=> void
 
 	let isOpen = false;
 
@@ -114,15 +116,14 @@
 				>
 					<span class="flex-1 truncate text-sm text-text">{persona.name}</span>
 					<button
-						class="rounded p-1 text-text opacity-0 transition-opacity group-hover:opacity-100 hover:bg-background"
-						aria-label="Persona options"
-						on:click={(e) => e.stopPropagation()}
+						class="rounded p-1 text-text opacity-0 transition-opacity group-hover:opacity-100 hover:bg-card"
+						aria-label="Delete persona"
+						on:click={(e) =>{
+							e.stopPropagation()
+							deletePersona(persona.persona_id)
+						} }
 					>
-						<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-							<circle cx="12" cy="5" r="2" />
-							<circle cx="12" cy="12" r="2" />
-							<circle cx="12" cy="19" r="2" />
-						</svg>
+						<img src={Trash} alt="Delete" class="h-4 w-4">
 					</button>
 				</div>
 			</div>
