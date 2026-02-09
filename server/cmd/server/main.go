@@ -54,14 +54,18 @@ func main() {
 
 	h := handlers.New(googleJWKS)
 
-	mux.Handle("/auth/google", http.HandlerFunc(h.GoogleAuthHandler))
-	mux.Handle("/health", http.HandlerFunc(handlers.HealthHandler))
-	mux.Handle("/user", http.HandlerFunc(handlers.GetUserHandler))
-	mux.Handle("/chat", http.HandlerFunc(handlers.ChatHandler))
-	mux.Handle("/create-persona", http.HandlerFunc(handlers.CreatePersonaHandler))
-	mux.Handle("/personas", http.HandlerFunc(handlers.GetPersonasHandler))
-	mux.Handle("/chat-sessions", http.HandlerFunc(handlers.GetChatSessions))
-	mux.Handle("/messages", http.HandlerFunc(handlers.GetSessionMessages))
+	mux.HandleFunc("POST /auth/google", h.GoogleAuthHandler)
+	mux.HandleFunc("GET /user", handlers.GetUserHandler)
+
+	mux.HandleFunc("POST /chat", handlers.ChatHandler)
+
+	mux.HandleFunc("POST /personas", handlers.CreatePersonaHandler)
+	mux.HandleFunc("GET /personas", handlers.GetPersonasHandler)
+	mux.HandleFunc("DELETE /personas/{id}", handlers.DeletePersonaHandler)
+
+	mux.HandleFunc("GET /sessions/{id}", handlers.GetChatSessions)
+
+	mux.HandleFunc("GET /messages/{id}", handlers.GetSessionMessages)
 
 	//remove prefix from incoming req url
 	handler := middlewares.StripStagePrefix(mux)
