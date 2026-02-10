@@ -1,15 +1,17 @@
 <script lang="ts">
 	import { chats } from '../../stores/store';
+	import Trash from '$lib/assets/icons/trash.png';
 
 	export let startNewChat: (message: string) => void;
-	export let openChatSession: (sessionid: string) => void
+	export let openChatSession: (sessionid: string) => void;
+	export let deleteChatSession: (sessionid: string) => void;
 	export let personaName;
 
-	let message = ""
+	let message = '';
 
 	function handleNewChat() {
 		startNewChat(message);
-		message = ""
+		message = '';
 	}
 </script>
 
@@ -45,12 +47,24 @@
 				<!-- Chat List -->
 				<div>
 					{#each $chats as chat}
-						<button
-							on:click={()=> openChatSession(chat.session_id)}
-							class="w-full cursor-pointer border-b border-white/10 py-4 text-left transition hover:opacity-80"
+						<div
+							class="group relative w-full cursor-pointer border-b border-white/10 py-4 text-left transition hover:opacity-80"
 						>
-							<div class="text-lg font-semibold text-text">{chat.title}</div>
-						</button>
+							<button on:click={() => openChatSession(chat.session_id)} class="w-full text-left">
+								<div class="text-lg font-semibold text-text">{chat.title}</div>
+							</button>
+
+							<button
+								class="absolute top-4 right-4 rounded p-1 text-text opacity-0 transition-opacity group-hover:opacity-100 hover:bg-card"
+								aria-label="Delete chat"
+								on:click={(e) => {
+									e.stopPropagation();
+									deleteChatSession(chat.session_id);
+								}}
+							>
+								<img src={Trash} alt="" class="h-4 w-4" />
+							</button>
+						</div>
 					{/each}
 				</div>
 			{:else}
