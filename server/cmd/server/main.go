@@ -64,6 +64,7 @@ func main() {
 	mux.HandleFunc("DELETE /personas/{id}", handlers.DeletePersonaHandler)
 
 	mux.HandleFunc("GET /sessions/{id}", handlers.GetChatSessions)
+	mux.HandleFunc("DELETE /sessions/{pid}/{sid}", handlers.DeleteChatSession) // pid=PersonaID and sid=SessionID
 
 	mux.HandleFunc("GET /messages/{id}", handlers.GetSessionMessages)
 
