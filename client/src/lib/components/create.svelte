@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { PersonaData } from '$lib/types/persona';
+	import type { PersonaData, TraitInfo } from '$lib/types/persona';
 
 	export let createPersona: (data: PersonaData) => void;
 
@@ -89,6 +89,57 @@
 
 		createPersona(personaData);
 	}
+
+	const oceanTraits: Record<string, TraitInfo> = {
+		openness: {
+			description: 'Measures creativity, curiosity, and willingness to entertain new ideas.',
+			lowLabel: 'Practical',
+			highLabel: 'Imaginative'
+		},
+		conscientiousness: {
+			description: 'Measures self-control, diligence, and attention to detail.',
+			lowLabel: 'Spontaneous',
+			highLabel: 'Disciplined'
+		},
+		extraversion: {
+			description: 'Measures boldness, energy, and social interactivity.',
+			lowLabel: 'Reserved',
+			highLabel: 'Outgoing'
+		},
+		agreeableness: {
+			description: 'Measures kindness, helpfulness, and willingness to cooperate.',
+			lowLabel: 'Challenging',
+			highLabel: 'Compassionate'
+		},
+		neuroticism: {
+			description: 'Measures depression, irritability, and proneness to anxiety.',
+			lowLabel: 'Resilient',
+			highLabel: 'Sensitive'
+		}
+	};
+
+	const additionalTraits: Record<string, TraitInfo> = {
+		intelligence: {
+			description: 'How knowledgeable and analytical the persona appears in conversations.',
+			lowLabel: 'Simple',
+			highLabel: 'Sophisticated'
+		},
+		thinking_style: {
+			description: 'How the persona processes information and makes decisions.',
+			lowLabel: 'Intuitive',
+			highLabel: 'Analytical'
+		},
+		humor_level: {
+			description: 'How often the persona uses jokes, wit, and playful language.',
+			lowLabel: 'Serious',
+			highLabel: 'Playful'
+		},
+		mood_fluctuation: {
+			description: "How much the persona's emotional state varies during conversations.",
+			lowLabel: 'Stable',
+			highLabel: 'Variable'
+		}
+	};
 </script>
 
 <div class="flex h-screen flex-col bg-background text-text lg:ml-72">
@@ -104,10 +155,11 @@
 			<div class="mb-12">
 				<h3 class="mb-2 text-xl font-semibold text-text">About</h3>
 				<p class="mb-6 text-sm text-text-muted">
-					Basic information about your persona's identity and background.
+					Define your persona's basic identity. This information helps establish their character and
+					how they'll introduce themselves.
 				</p>
 
-				<div class="space-y-4">
+				<div class="space-y-6">
 					<div>
 						<label for="name" class="mb-2 block text-sm font-medium text-text">Name *</label>
 						<input
@@ -115,20 +167,20 @@
 							type="text"
 							bind:value={formData.name}
 							class="w-full rounded-lg border border-white/10 bg-card px-4 py-2.5 text-text placeholder-text-muted focus:ring-2 focus:ring-white/20 focus:outline-none"
-							placeholder="Enter persona name"
+							placeholder="e.g., Alex Chen"
 						/>
 					</div>
 
 					<div>
-						<label for="description" class="mb-2 block text-sm font-medium text-text"
-							>Description *</label
-						>
+						<label for="description" class="mb-2 block text-sm font-medium text-text">
+							Description *
+						</label>
 						<textarea
 							id="description"
 							rows="3"
 							bind:value={formData.description}
 							class="w-full resize-none rounded-lg border border-white/10 bg-card px-4 py-2.5 text-text placeholder-text-muted focus:ring-2 focus:ring-white/20 focus:outline-none"
-							placeholder="Describe your persona"
+							placeholder="e.g., A friendly software engineer who loves teaching others and has a quirky sense of humor"
 						></textarea>
 					</div>
 
@@ -146,33 +198,38 @@
 						</div>
 
 						<div>
-							<label for="pronouns" class="mb-2 block text-sm font-medium text-text"
-								>Pronouns *</label
-							>
+							<label for="pronouns" class="mb-2 block text-sm font-medium text-text">
+								Pronouns *
+							</label>
 							<input
 								id="pronouns"
 								type="text"
 								bind:value={formData.pronouns}
 								class="w-full rounded-lg border border-white/10 bg-card px-4 py-2.5 text-text placeholder-text-muted focus:ring-2 focus:ring-white/20 focus:outline-none"
-								placeholder="he/him"
+								placeholder="e.g., he/him"
 							/>
 						</div>
 					</div>
 				</div>
 			</div>
 
-			<!-- Base Type Section -->
+			<div class="my-12 border-t border-white/10"></div>
+
+			<!-- Big Five traits Section -->
 			<div class="mb-12">
-				<h3 class="mb-2 text-xl font-semibold text-text">Personality (Big Five)</h3>
+				<h3 class="mb-2 text-xl font-semibold text-text">Big Five Personality Traits</h3>
 				<p class="mb-6 text-sm text-text-muted">
-					Core personality traits that define how your persona thinks and behaves.
+					Adjust these traits to shape how your persona thinks and communicates.
 				</p>
 
-				<div class="mb-6">
+				<!-- Openness -->
+				<div class="mb-8">
 					<label for="openness" class="mb-2 block text-sm font-medium text-text">
 						Openness
-						<span class="ml-2 text-text-muted">({formData.openness})</span>
+						<span class="ml-2 text-text-muted">({formData.openness.toFixed(1)})</span>
 					</label>
+					<p class="mb-3 text-xs text-text-muted">{oceanTraits.openness.description}</p>
+
 					<input
 						id="openness"
 						type="range"
@@ -183,16 +240,19 @@
 						class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-card accent-text"
 					/>
 					<div class="mt-1 flex justify-between text-xs text-text-muted">
-						<span>0</span>
-						<span>10</span>
+						<span>{oceanTraits.openness.lowLabel}</span>
+						<span>{oceanTraits.openness.highLabel}</span>
 					</div>
 				</div>
 
-				<div class="mb-6">
+				<!-- Conscientiousness -->
+				<div class="mb-8">
 					<label for="conscientiousness" class="mb-2 block text-sm font-medium text-text">
 						Conscientiousness
-						<span class="ml-2 text-text-muted">({formData.conscientiousness})</span>
+						<span class="ml-2 text-text-muted">({formData.conscientiousness.toFixed(1)})</span>
 					</label>
+					<p class="mb-3 text-xs text-text-muted">{oceanTraits.conscientiousness.description}</p>
+
 					<input
 						id="conscientiousness"
 						type="range"
@@ -203,16 +263,19 @@
 						class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-card accent-text"
 					/>
 					<div class="mt-1 flex justify-between text-xs text-text-muted">
-						<span>0</span>
-						<span>10</span>
+						<span>{oceanTraits.conscientiousness.lowLabel}</span>
+						<span>{oceanTraits.conscientiousness.highLabel}</span>
 					</div>
 				</div>
 
-				<div class="mb-6">
+				<!-- Extraversion -->
+				<div class="mb-8">
 					<label for="extraversion" class="mb-2 block text-sm font-medium text-text">
 						Extraversion
-						<span class="ml-2 text-text-muted">({formData.extraversion})</span>
+						<span class="ml-2 text-text-muted">({formData.extraversion.toFixed(1)})</span>
 					</label>
+					<p class="mb-3 text-xs text-text-muted">{oceanTraits.extraversion.description}</p>
+
 					<input
 						id="extraversion"
 						type="range"
@@ -223,16 +286,19 @@
 						class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-card accent-text"
 					/>
 					<div class="mt-1 flex justify-between text-xs text-text-muted">
-						<span>0</span>
-						<span>10</span>
+						<span>{oceanTraits.extraversion.lowLabel}</span>
+						<span>{oceanTraits.extraversion.highLabel}</span>
 					</div>
 				</div>
 
-				<div class="mb-6">
+				<!-- Agreeableness -->
+				<div class="mb-8">
 					<label for="agreeableness" class="mb-2 block text-sm font-medium text-text">
 						Agreeableness
-						<span class="ml-2 text-text-muted">({formData.agreeableness})</span>
+						<span class="ml-2 text-text-muted">({formData.agreeableness.toFixed(1)})</span>
 					</label>
+					<p class="mb-3 text-xs text-text-muted">{oceanTraits.agreeableness.description}</p>
+
 					<input
 						id="agreeableness"
 						type="range"
@@ -243,16 +309,19 @@
 						class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-card accent-text"
 					/>
 					<div class="mt-1 flex justify-between text-xs text-text-muted">
-						<span>0</span>
-						<span>10</span>
+						<span>{oceanTraits.agreeableness.lowLabel}</span>
+						<span>{oceanTraits.agreeableness.highLabel}</span>
 					</div>
 				</div>
 
-				<div class="mb-6">
+				<!-- Neuroticism -->
+				<div class="mb-8">
 					<label for="neuroticism" class="mb-2 block text-sm font-medium text-text">
 						Neuroticism
-						<span class="ml-2 text-text-muted">({formData.neuroticism})</span>
+						<span class="ml-2 text-text-muted">({formData.neuroticism.toFixed(1)})</span>
 					</label>
+					<p class="mb-3 text-xs text-text-muted">{oceanTraits.neuroticism.description}</p>
+
 					<input
 						id="neuroticism"
 						type="range"
@@ -263,24 +332,29 @@
 						class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-card accent-text"
 					/>
 					<div class="mt-1 flex justify-between text-xs text-text-muted">
-						<span>0</span>
-						<span>10</span>
+						<span>{oceanTraits.neuroticism.lowLabel}</span>
+						<span>{oceanTraits.neuroticism.highLabel}</span>
 					</div>
 				</div>
 			</div>
 
-			<!-- More Section -->
+			<div class="my-12 border-t border-white/10"></div>
+
+			<!-- Additional traits Section -->
 			<div class="mb-12">
 				<h3 class="mb-2 text-xl font-semibold text-text">Additional Traits</h3>
 				<p class="mb-6 text-sm text-text-muted">
 					Fine-tune your persona's cognitive and emotional characteristics.
 				</p>
 
-				<div class="mb-6">
+				<!-- Intelligence -->
+				<div class="mb-8">
 					<label for="intelligence" class="mb-2 block text-sm font-medium text-text">
 						Intelligence
-						<span class="ml-2 text-text-muted">({formData.intelligence})</span>
+						<span class="ml-2 text-text-muted">({formData.intelligence.toFixed(1)})</span>
 					</label>
+					<p class="mb-3 text-xs text-text-muted">{additionalTraits.intelligence.description}</p>
+
 					<input
 						id="intelligence"
 						type="range"
@@ -291,16 +365,19 @@
 						class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-card accent-text"
 					/>
 					<div class="mt-1 flex justify-between text-xs text-text-muted">
-						<span>0</span>
-						<span>10</span>
+						<span>{additionalTraits.intelligence.lowLabel}</span>
+						<span>{additionalTraits.intelligence.highLabel}</span>
 					</div>
 				</div>
 
-				<div class="mb-6">
+				<!-- Thinking Style -->
+				<div class="mb-8">
 					<label for="thinking_style" class="mb-2 block text-sm font-medium text-text">
 						Thinking Style
-						<span class="ml-2 text-text-muted">({formData.thinking_style})</span>
+						<span class="ml-2 text-text-muted">({formData.thinking_style.toFixed(1)})</span>
 					</label>
+					<p class="mb-3 text-xs text-text-muted">{additionalTraits.thinking_style.description}</p>
+
 					<input
 						id="thinking_style"
 						type="range"
@@ -311,13 +388,18 @@
 						class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-card accent-text"
 					/>
 					<div class="mt-1 flex justify-between text-xs text-text-muted">
-						<span>0</span>
-						<span>10</span>
+						<span>{additionalTraits.thinking_style.lowLabel}</span>
+						<span>{additionalTraits.thinking_style.highLabel}</span>
 					</div>
 				</div>
 
-				<div class="mb-6">
-					<label for="tone" class="mb-2 block text-sm font-medium text-text">Tone *</label>
+				<!-- Tone -->
+				<div class="mb-8">
+					<label for="tone" class="mb-2 block text-sm font-medium text-text"> Tone * </label>
+					<p class="mb-3 text-xs text-text-muted">
+						The overall style and manner of communication (e.g., friendly, professional, casual,
+						warm).
+					</p>
 					<input
 						id="tone"
 						type="text"
@@ -327,11 +409,14 @@
 					/>
 				</div>
 
-				<div class="mb-6">
+				<!-- Humor Level -->
+				<div class="mb-8">
 					<label for="humor_level" class="mb-2 block text-sm font-medium text-text">
 						Humor Level
-						<span class="ml-2 text-text-muted">({formData.humor_level})</span>
+						<span class="ml-2 text-text-muted">({formData.humor_level.toFixed(1)})</span>
 					</label>
+					<p class="mb-3 text-xs text-text-muted">{additionalTraits.humor_level.description}</p>
+
 					<input
 						id="humor_level"
 						type="range"
@@ -342,16 +427,21 @@
 						class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-card accent-text"
 					/>
 					<div class="mt-1 flex justify-between text-xs text-text-muted">
-						<span>0</span>
-						<span>10</span>
+						<span>{additionalTraits.humor_level.lowLabel}</span>
+						<span>{additionalTraits.humor_level.highLabel}</span>
 					</div>
 				</div>
 
-				<div class="mb-6">
+				<!-- Mood Fluctuation -->
+				<div class="mb-8">
 					<label for="mood_fluctuation" class="mb-2 block text-sm font-medium text-text">
 						Mood Fluctuation
-						<span class="ml-2 text-text-muted">({formData.mood_fluctuation})</span>
+						<span class="ml-2 text-text-muted">({formData.mood_fluctuation.toFixed(1)})</span>
 					</label>
+					<p class="mb-3 text-xs text-text-muted">
+						{additionalTraits.mood_fluctuation.description}
+					</p>
+
 					<input
 						id="mood_fluctuation"
 						type="range"
@@ -362,11 +452,13 @@
 						class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-card accent-text"
 					/>
 					<div class="mt-1 flex justify-between text-xs text-text-muted">
-						<span>0</span>
-						<span>10</span>
+						<span>{additionalTraits.mood_fluctuation.lowLabel}</span>
+						<span>{additionalTraits.mood_fluctuation.highLabel}</span>
 					</div>
 				</div>
 			</div>
+
+			<div class="my-12 border-t border-white/10"></div>
 
 			<!-- Interests Section -->
 			<div class="mb-12">
@@ -375,7 +467,7 @@
 					Define what your persona enjoys and dislikes. Separate items with commas.
 				</p>
 
-				<div class="space-y-4">
+				<div class="space-y-6">
 					<div>
 						<label for="likes" class="mb-2 block text-sm font-medium text-text">Likes *</label>
 						<input
@@ -401,6 +493,8 @@
 				</div>
 			</div>
 
+			<div class="my-12 border-t border-white/10"></div>
+
 			<!-- Language Section -->
 			<div class="mb-12">
 				<h3 class="mb-2 text-xl font-semibold text-text">Language Style</h3>
@@ -408,7 +502,7 @@
 					Configure how your persona communicates and expresses themselves.
 				</p>
 
-				<div class="mb-6">
+				<div class="mb-8">
 					<label for="formality" class="mb-2 block text-sm font-medium text-text">
 						Formality
 						<span class="ml-2 text-text-muted">({formData.formality})</span>
@@ -423,12 +517,12 @@
 						class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-card accent-text"
 					/>
 					<div class="mt-1 flex justify-between text-xs text-text-muted">
-						<span>0</span>
-						<span>10</span>
+						<span>Casual</span>
+						<span>Formal</span>
 					</div>
 				</div>
 
-				<div class="mb-6">
+				<div class="mb-8">
 					<label for="fluency" class="mb-2 block text-sm font-medium text-text">Fluency *</label>
 					<select
 						id="fluency"
@@ -443,6 +537,8 @@
 				</div>
 			</div>
 
+			<div class="my-12 border-t border-white/10"></div>
+
 			<!-- Others Section -->
 			<div class="mb-12">
 				<h3 class="mb-2 text-xl font-semibold text-text">Other Settings</h3>
@@ -450,7 +546,7 @@
 					Additional preferences for your persona's communication style.
 				</p>
 
-				<div class="space-y-4">
+				<div class="space-y-6">
 					<div>
 						<label for="emoji_usage" class="mb-2 block text-sm font-medium text-text"
 							>Emoji Usage *</label
