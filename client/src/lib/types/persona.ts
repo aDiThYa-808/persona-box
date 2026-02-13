@@ -37,3 +37,9 @@ export interface PersonaData {
 	emoji_usage: string;
 	response_length: string;
 }
+
+export interface TraitInfo {
+	description: string
+	lowLabel : string
+	highLabel : string
+}
