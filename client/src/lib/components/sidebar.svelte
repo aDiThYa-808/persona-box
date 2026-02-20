@@ -3,16 +3,22 @@
 	import { resolve } from '$app/paths';
 	import { onMount } from 'svelte';
 	import { personas } from '../../stores/store';
-	import Trash from '$lib/assets/icons/trash.png'
+	import Trash from '$lib/assets/icons/trash.png';
+	import Logout from '$lib/assets/icons/logout.png';
+	import Github from '$lib/assets/icons/github.png';
+	import BMAC from '$lib/assets/icons/bmac.png';
 
 	export let name: string;
 	export let email: string;
-	export let deletePersona: (personaid: string)=> void
+	export let deletePersona: (personaid: string) => void;
+	export let logout: () => void;
 
 	let isOpen = false;
+	let mounted = false;
 
 	// Check if we on desktop on mount
 	onMount(() => {
+		mounted = true;
 		const checkDesktop = () => {
 			isOpen = window.innerWidth >= 1024; // lg breakpoint
 		};
@@ -24,17 +30,26 @@
 	});
 
 	function goToPersonaPage(id: string) {
-		goto(`/chat/${id}`,{
-			replaceState:false,
-			noScroll:false
+		goto(`/chat/${id}`, {
+			replaceState: false,
+			noScroll: false
 		});
 	}
 </script>
 
+<script:head>
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+	<link
+		href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap"
+		rel="stylesheet"
+	/>
+</script:head>
+
 <!-- Overlay for mobile -->
 {#if isOpen}
 	<button
-		class="fixed inset-0 z-40 bg-black/50 lg:hidden"
+		class="fixed inset-0 z-40 bg-black/25 lg:hidden backdrop-blur-sm"
 		on:click={() => (isOpen = false)}
 		tabindex="-1"
 		aria-label="Close drawer"
@@ -43,9 +58,9 @@
 
 <!-- Drawer -->
 <aside
-	class="fixed top-0 left-0 z-50 flex h-full w-72 flex-col border-r border-white/10 bg-card transition-transform duration-300 lg:translate-x-0 {isOpen
-		? 'translate-x-0'
-		: '-translate-x-full'}"
+	class="fixed top-0 left-0 z-50 flex h-full w-72 flex-col border-r border-white/10 bg-card lg:translate-x-0 {mounted
+		? 'transition-transform lg:transition-none'
+		: ''} {isOpen ? 'translate-x-0' : '-translate-x-full'}"
 >
 	<!-- Header -->
 	<div class="flex items-center justify-between border-b border-white/10 px-4 py-4">
@@ -100,7 +115,7 @@
 	<div class="flex-1 overflow-y-auto px-3 py-3">
 		<div class="px-3 py-2 text-xs font-medium text-text-muted">Recents</div>
 		{#each $personas as persona (persona.persona_id)}
-			<div >
+			<div>
 				<div
 					class="group flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-background"
 					role="button"
@@ -116,18 +131,44 @@
 				>
 					<span class="flex-1 truncate text-sm text-text">{persona.name}</span>
 					<button
-						class="rounded p-1 text-text opacity-0 transition-opacity group-hover:opacity-100 hover:bg-card"
+						class="rounded p-1 text-text opacity-100 transition-opacity hover:bg-card lg:opacity-0 lg:group-hover:opacity-100"
 						aria-label="Delete persona"
-						on:click={(e) =>{
-							e.stopPropagation()
-							deletePersona(persona.persona_id)
-						} }
+						on:click={(e) => {
+							e.stopPropagation();
+							deletePersona(persona.persona_id);
+						}}
 					>
-						<img src={Trash} alt="Delete" class="h-3 w-3">
+						<img src={Trash} alt="Delete" class="h-4 w-4" />
 					</button>
 				</div>
 			</div>
 		{/each}
+	</div>
+
+	<!-- support -->
+	<div class="border-t border-white/10 px-3 py-3">
+		<div class="px-3 py-2 text-xs font-medium text-text-muted">Support</div>
+		<div class="justify-left flex items-center gap-3 px-3">
+			<!-- GitHub Star -->
+			<a
+				href="https://github.com/aDiThYa-808/persona-box"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="transition-opacity hover:opacity-80"
+			>
+				<img src={Github} alt="GitHub" class=" h-6 w-auto" />
+			</a>
+
+			<!-- Buy Me a Coffee -->
+			<a
+				href="https://www.buymeacoffee.com/adithyas"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="transition-opacity hover:opacity-80"
+			>
+				<img src={BMAC} alt="Buy me a coffee" class="h-6 w-auto" />
+			</a>
+		</div>
 	</div>
 
 	<!-- User Section -->
@@ -146,19 +187,14 @@
 				<div class="truncate text-xs text-text-muted">{email}</div>
 			</div>
 			<button
-				class="rounded p-1 text-text transition-colors hover:bg-background"
+				class="rounded p-1 text-text transition-colors hover:bg-card"
 				aria-label="Logout"
+				on:click={(e) => {
+					e.stopPropagation();
+					logout();
+				}}
 			>
-				<svg
-					width="16"
-					height="16"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
-				</svg>
+				<img src={Logout} alt="Delete" class="h-4 w-4" />
 			</button>
 		</div>
 	</div>
