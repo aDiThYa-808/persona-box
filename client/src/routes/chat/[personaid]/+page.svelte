@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Chatlist from '$lib/components/chatlist.svelte';
 	import Create from '$lib/components/create.svelte';
+	import Modal from '$lib/components/modal.svelte';
 	import { chats, personas } from '../../../stores/store.js';
 	import { goto } from '$app/navigation';
 	import type { PersonaData, PersonaList } from '$lib/types/persona.js';
@@ -10,6 +11,9 @@
 	$: personaName = $personas.find((p) => p.persona_id === data.personaid)?.name;
 	$: chatSessions = data.chatSessions;
 	$: if (chatSessions) chats.set(chatSessions);
+
+	$: showConfirmModal = false;
+	$: deleteSessionId = '' // id of the session that has to be deleted
 
 	async function createPersona(data: PersonaData) {
 		try {
@@ -58,22 +62,32 @@
 		});
 	}
 
-	async function deleteChatSession(sessionid: string) {
-		if (confirm('Are you sure you want to delete this chat session?')) {
-			try {
-				const res = await fetch(`/api/sessions/${personaid}/${sessionid}`, { method: 'DELETE' });
-				const data = await res.json();
-				if (!res.ok) {
-					throw new Error(data);
-				}
-				console.log('deleted');
-				chats.update((current) => current.filter((c) => c.session_id !== sessionid));
-			} catch (err) {
-				console.log(err);
+	function deleteChatSession(sessionid: string) {
+		deleteSessionId = sessionid
+		showConfirmModal = true;
+	}
+
+	async function confirmDelete() {
+		try {
+			const res = await fetch(`/api/sessions/${personaid}/${deleteSessionId}`, { method: 'DELETE' });
+			const data = await res.json();
+			if (!res.ok) {
+				throw new Error(data);
 			}
+			console.log('deleted');
+			chats.update((current) => current.filter((c) => c.session_id !== deleteSessionId));
+		} catch (err) {
+			console.log(err);
+		} finally{
+			deleteSessionId = ""
+			showConfirmModal = false
 		}
 	}
-	
+
+	function cancelDelete(){
+		deleteSessionId = ""
+		showConfirmModal = false
+	}
 </script>
 
 {#if data.personaid == 'new-persona'}
@@ -81,3 +95,13 @@
 {:else}
 	<Chatlist {personaName} {startNewChat} {openChatSession} {deleteChatSession} />
 {/if}
+
+<Modal 
+	isOpen={showConfirmModal}
+	title="Confirm"
+	message="Are you sure you want to delete this chat session?"
+	confirmButtonText="Delete"
+	cancelButtonText="Cancel"
+	onConfirm={confirmDelete}
+	onCancel={cancelDelete}
+/>
