@@ -66,26 +66,55 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 
 	systemPrompt := openaiadapter.CreateSystemPrompt(persona)
 	userMessage := req.Message
-	assistantMessage := openaiadapter.CreateAssistantPrompt(userMessage, userMessage) // FIX THIS ASAP. USE LAST N MESSAGES AND SUMMARY FROM TABLE
 
-	resp, tokensUsed, chatErr := openaiadapter.Chat(ctx, systemPrompt, assistantMessage, userMessage)
+	var (
+		sessionID    string
+		chatSession  models.ChatSession
+		isNewSession bool
+		messages     []models.ChatMessage
+	)
+
+	if req.SessionID == "" {
+		isNewSession = true
+		sessionID = uuid.New().String()
+	} else {
+		isNewSession = false
+		sessionID = req.SessionID
+
+		cs, getChatSessionErr := dynamodbx.GetChatSessionByID(ctx, req.PersonaID, sessionID)
+		if getChatSessionErr != nil {
+			httpx.WriteJSONError(w, "chat session not found", http.StatusNotFound)
+			return
+		}
+
+		chatSession = cs
+
+		msgs, getMessageErr := dynamodbx.GetAllSessionMessages(ctx, sessionID)
+		if getMessageErr != nil {
+			httpx.WriteJSONError(w, "couldnt fetch messages", http.StatusInternalServerError)
+			return
+		}
+		messages = msgs
+	}
+
+	resp, tokensUsed, chatErr := openaiadapter.Chat(ctx, systemPrompt, messages, userMessage)
 	if chatErr != nil {
 		log.Println(chatErr)
 		httpx.WriteJSONError(w, "failed to access llm", http.StatusInternalServerError)
 		return
 	}
 
-	sessionID := req.SessionID
+	messages = append(messages, models.ChatMessage{SessionID: sessionID, CreatedAt: time.Now().UTC().Format(time.RFC3339), Role: "user", Message: userMessage})
+	messages = append(messages, models.ChatMessage{SessionID: sessionID, CreatedAt: time.Now().UTC().Format(time.RFC3339), Role: "assistant", Message: resp})
 
-	if sessionID == "" {
-		title, summary, err := openaiadapter.GenerateTitleAndSummary(ctx, userMessage)
+	if isNewSession {
+
+		title, summary, err := openaiadapter.GenerateTitleAndSummary(ctx, messages)
 		if err != nil {
 			log.Println(err)
 			title = persona.PersonaName + " - New Chat"
-			summary = userMessage + "." + resp
+			summary = "User: " + userMessage + "." + " Assistant: " + resp
 		}
-
-		sessionID = uuid.New().String()
 
 		chatSession := models.ChatSession{
 			SessionID:    sessionID,
@@ -108,19 +137,16 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 		response.SessionID = chatSession.SessionID
 		response.Title = chatSession.Title
 	} else {
-		chatSession, getChatSessionErr := dynamodbx.GetChatSessionByID(ctx, req.PersonaID, req.SessionID)
-		if getChatSessionErr != nil {
-			log.Println(getChatSessionErr)
-			httpx.WriteJSONError(w, "chat session not found", http.StatusNotFound)
-			return
-		}
-
 		if chatSession.TokenCount+int(tokensUsed) > 7000 { // add message limit after deciding the limit.
 			httpx.WriteJSONError(w, "chat limit reached", http.StatusTooManyRequests)
 			return
 		}
-
-		// update summary after every N number of messages. N tbd
+		if chatSession.MessageCount%10 == 0 {
+			title, summary, err := openaiadapter.GenerateTitleAndSummary(ctx, messages)
+			if err == nil {
+				dynamodbx.UpdateTitleAndSummary(ctx, chatSession.PersonaID, chatSession.SessionID, title, summary) // fail silently if update fail. previous summary remains
+			}
+		}
 
 		updateErr := dynamodbx.UpdateSessionMessageAndTokenCount(ctx, chatSession.PersonaID, chatSession.SessionID, time.Now().UTC().Format(time.RFC3339), 2, int(tokensUsed))
 		if updateErr != nil {
