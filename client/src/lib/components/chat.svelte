@@ -1,12 +1,24 @@
 <script lang="ts">
-	import type { Message } from '$lib/types/message';
 	import { messages } from '../../stores/store';
+	import { tick } from 'svelte';
 
 	export let chatName: string;
 	export let loading: boolean;
 	export let sendPrompt: (prompt: string) => void;
-
+	
 	let prompt = '';
+	let messagesContainer: HTMLDivElement;
+
+	$: if ($messages || loading) {
+		scrollToBottom();
+	}
+
+	async function scrollToBottom() {
+		await tick();
+		if (messagesContainer) {
+			messagesContainer.scrollTop = messagesContainer.scrollHeight;
+		}
+	}
 
 	function handleSend() {
 		if (!prompt.trim() || loading) return;
@@ -27,9 +39,9 @@
 	</div>
 
 	<!-- Chat Messages -->
-	<div class="flex-1 overflow-y-auto px-6 py-8 pb-32">
+	<div bind:this={messagesContainer} class="flex-1 overflow-y-auto px-6 py-8 pb-32">
 		<div class="mx-auto max-w-3xl">
-			{#each $messages.sort((a,b)=>a.created_at.localeCompare(b.created_at)) as msg, i (i)}
+			{#each $messages.sort((a, b) => a.created_at.localeCompare(b.created_at)) as msg, i (i)}
 				<div class="flex {msg.role === 'user' ? 'justify-end' : 'justify-start'} mb-4">
 					<div
 						class={`max-w-[85%] px-4 py-2.5 text-lg leading-relaxed ${
