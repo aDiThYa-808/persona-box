@@ -129,6 +129,28 @@ func UpdateSessionMessageAndTokenCount(ctx context.Context, personaID string, se
 	return nil
 }
 
+func UpdateTitleAndSummary(ctx context.Context, personaID string, sessionID string, title string, summary string) error {
+	updateParams := &dynamodb.UpdateItemInput{
+		TableName: aws.String("ChatSession"),
+		Key: map[string]types.AttributeValue{
+			"SessionID": &types.AttributeValueMemberS{Value: sessionID},
+			"PersonaID": &types.AttributeValueMemberS{Value: personaID},
+		},
+		UpdateExpression: aws.String("SET Title = :title, Summary = :summary"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":title":   &types.AttributeValueMemberS{Value: title},
+			":summary": &types.AttributeValueMemberS{Value: summary},
+		},
+		ConditionExpression: aws.String("attribute_exists(SessionID)"),
+	}
+
+	_, updateErr := DB.UpdateItem(ctx, updateParams)
+	if updateErr != nil {
+		return updateErr
+	}
+	return nil
+}
+
 func DeleteSession(ctx context.Context, personaid string, sessionid string) error {
 	deleteMsgErr := DeleteAllMessagesOfASession(ctx, sessionid)
 	if deleteMsgErr != nil {
