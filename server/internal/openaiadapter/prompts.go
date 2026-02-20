@@ -67,13 +67,3 @@ Instructions:
 
 	return prompt
 }
-
-func CreateAssistantPrompt(message string, summary string) (assistantPrompt string) {
-	prompt := fmt.Sprintf(
-		`Chat History: %v
-		 Chat Summary: %v
-		`, message, summary,
-	)
-
-	return prompt
-}
