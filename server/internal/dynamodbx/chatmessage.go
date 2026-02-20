@@ -38,6 +38,7 @@ func GetAllSessionMessages(ctx context.Context, sessionid string) ([]models.Chat
 		ExpressionAttributeValues: map[string]types.AttributeValue{
 			":sid": &types.AttributeValueMemberS{Value: sessionid},
 		},
+		ScanIndexForward: aws.Bool(true),
 	}
 
 	resp, queryErr := DB.Query(ctx, queryParams)
