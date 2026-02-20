@@ -44,7 +44,7 @@
 			{#each $messages.sort((a, b) => a.created_at.localeCompare(b.created_at)) as msg, i (i)}
 				<div class="flex {msg.role === 'user' ? 'justify-end' : 'justify-start'} mb-4">
 					<div
-						class={`max-w-[85%] px-4 py-2.5 text-lg leading-relaxed ${
+						class={`max-w-[85%] break-words px-4 py-2.5 text-lg leading-relaxed ${
 							msg.role === 'user' ? 'rounded-2xl bg-card text-text' : 'text-text'
 						}`}
 					>
