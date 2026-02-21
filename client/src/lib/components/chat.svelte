@@ -32,7 +32,7 @@
 	}
 </script>
 
-<div class="flex h-screen flex-col bg-background text-text lg:ml-72">
+<div class="flex h-dvh h-screen flex-col bg-background text-text lg:ml-72">
 	<!-- Chat Header -->
 	<div class="border-b border-white/10 bg-card px-6 py-4 pl-16 lg:pl-6">
 		<h2 class="truncate text-lg font-medium text-text">{chatName}</h2>
