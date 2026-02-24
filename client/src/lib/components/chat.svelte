@@ -4,6 +4,7 @@
 
 	export let chatName: string;
 	export let loading: boolean;
+	export let limitReached: boolean;
 	export let sendPrompt: (prompt: string) => void;
 	
 	let prompt = '';
@@ -32,19 +33,19 @@
 	}
 </script>
 
-<div class="flex h-dvh h-screen flex-col bg-background text-text lg:ml-72">
+<div class="flex h-dvh flex-col bg-background text-text lg:ml-72">
 	<!-- Chat Header -->
-	<div class="border-b border-white/10 bg-card px-6 py-4 pl-16 lg:pl-6">
+	<div class="sticky top-0 z-10 border-b border-white/10 bg-card px-4 py-4 pl-16 sm:px-6 lg:pl-6">
 		<h2 class="truncate text-lg font-medium text-text">{chatName}</h2>
 	</div>
 
 	<!-- Chat Messages -->
-	<div bind:this={messagesContainer} class="flex-1 overflow-y-auto px-6 py-8 pb-32">
-		<div class="mx-auto max-w-3xl">
+	<div bind:this={messagesContainer} class="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-8">
+		<div class="mx-auto max-w-3xl pb-4">
 			{#each $messages.sort((a, b) => a.created_at.localeCompare(b.created_at)) as msg, i (i)}
-				<div class="flex {msg.role === 'user' ? 'justify-end' : 'justify-start'} mb-4">
+				<div class="flex {msg.role === 'user' ? 'justify-end' : 'justify-start'} mb-4 sm:mb-6">
 					<div
-						class={`max-w-[85%] break-words px-4 py-2.5 text-lg leading-relaxed ${
+						class={`max-w-[90%] sm:max-w-[80%] break-words px-3 py-2 sm:px-4 sm:py-2.5 text-base sm:text-lg leading-relaxed ${
 							msg.role === 'user' ? 'rounded-2xl bg-card text-text' : 'text-text'
 						}`}
 					>
@@ -53,8 +54,8 @@
 				</div>
 			{/each}
 			{#if loading}
-				<div class="mb-4 flex justify-start">
-					<div class="px-1 py-2 text-lg text-text-muted">
+				<div class="mb-4 flex justify-start sm:mb-6">
+					<div class="px-1 py-2 text-base sm:text-lg text-text-muted">
 						<span class="inline-flex items-center gap-1">
 							<span class="animate-pulse">●</span>
 							<span class="animate-pulse delay-75">●</span>
@@ -66,29 +67,51 @@
 		</div>
 	</div>
 
-	<!--Input -->
-	<div
-		class="fixed right-0 bottom-0 left-0 bg-linear-to-t from-background via-background to-transparent px-4 pt-8 pb-6 lg:left-72"
-	>
+	<!-- Input - Sticky to bottom of container -->
+	<div class="sticky bottom-0 border-t border-white/10 bg-background px-4 py-3 sm:px-6 sm:py-4">
+		{#if limitReached}
+			<!-- Limit Reached Banner -->
+			<div class="mx-auto mb-3 max-w-3xl rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 sm:px-6">
+				<div class="flex items-start gap-3">
+					<svg
+						class="mt-0.5 h-5 w-5 shrink-0 text-red-400"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
+						<path d="M12 9v4m0 4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
+					</svg>
+					<div class="flex-1 text-sm sm:text-base">
+						<p class="font-medium text-red-400">Chat limit reached</p>
+						<p class="mt-1 text-red-300/80">
+							You've reached the message limit for this conversation. Please create a new chat to continue.
+						</p>
+					</div>
+				</div>
+			</div>
+		{/if}
+
 		<div
-			class="mx-auto flex max-w-3xl items-end space-x-2 rounded-2xl border border-white/10 bg-card p-2 shadow-lg"
+			class="mx-auto flex max-w-3xl items-end gap-2 rounded-2xl border border-white/10 bg-card p-1.5 sm:p-2 shadow-lg {limitReached ? 'opacity-50' : ''}"
 		>
 			<textarea
 				bind:value={prompt}
 				rows="1"
-				placeholder="Type a message..."
-				class="flex-1 resize-none border-0 bg-transparent px-3 py-2.5 text-lg text-text placeholder-text-muted focus:ring-0 focus:outline-none"
-				style="overflow: hidden;"
+				placeholder={limitReached ? "Chat limit reached..." : "Type a message..."}
+				disabled={limitReached}
+				class="max-h-[200px] min-h-[44px] flex-1 resize-none border-0 bg-transparent px-3 py-2 sm:py-2.5 text-base sm:text-lg text-text placeholder-text-muted focus:ring-0 focus:outline-none disabled:cursor-not-allowed"
+				style="overflow-y: auto; field-sizing: content;"
 				on:input={(e) => {
 					e.currentTarget.style.height = 'auto';
-					e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
+					e.currentTarget.style.height = Math.min(e.currentTarget.scrollHeight, 200) + 'px';
 				}}
 				on:keydown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSend())}
 			></textarea>
 			<button
 				on:click={handleSend}
-				class="shrink-0 rounded-lg bg-text p-2.5 text-background transition hover:bg-text/90 disabled:cursor-not-allowed disabled:opacity-50"
-				disabled={loading || !prompt.trim()}
+				class="shrink-0 rounded-lg bg-text p-2 sm:p-2.5 text-background transition hover:bg-text/90 disabled:cursor-not-allowed disabled:opacity-50"
+				disabled={loading || !prompt.trim() || limitReached}
 				aria-label="Send message"
 			>
 				<svg
@@ -100,6 +123,7 @@
 					stroke-width="2"
 					stroke-linecap="round"
 					stroke-linejoin="round"
+					class="h-4 w-4 sm:h-[18px] sm:w-[18px]"
 				>
 					<path d="M12 19V5M5 12l7-7 7 7" />
 				</svg>

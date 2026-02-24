@@ -65,7 +65,7 @@
 			class="text-lg font-medium tracking-tight transition-opacity hover:opacity-80"
 			style="font-family: 'Pixelify Sans', sans-serif;"
 		>
-			PersonaBox
+			Personabox
 		</a>
 	</header>
 	<main class="flex flex-1 items-center justify-center px-8">

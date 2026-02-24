@@ -2,6 +2,7 @@
 	import type { PersonaData, TraitInfo } from '$lib/types/persona';
 
 	export let createPersona: (data: PersonaData) => void;
+	export let isLoading: boolean;
 
 	let formData = {
 		// About
@@ -140,12 +141,25 @@
 			highLabel: 'Variable'
 		}
 	};
+
+	function handleSliderFocus(event: Event) {
+		// Force blur any active text input when slider is touched
+		const activeElement = document.activeElement;
+		if (
+			activeElement &&
+			(activeElement instanceof HTMLInputElement ||
+				activeElement instanceof HTMLTextAreaElement ||
+				activeElement instanceof HTMLSelectElement)
+		) {
+			activeElement.blur();
+		}
+	}
 </script>
 
 <div class="flex h-screen flex-col bg-background text-text lg:ml-72">
 	<!-- Header -->
-	<div class="border-b border-white/10 bg-card px-6 py-4 pl-16 lg:pl-6">
-		<h2 class="text-lg font-medium text-text">Create New Persona</h2>
+	<div class="sticky top-0 z-10 border-b border-white/10 bg-card px-4 py-4 pl-16 sm:px-6 lg:pl-6">
+		<h2 class="truncate text-lg font-medium text-text">Create New Persona</h2>
 	</div>
 
 	<!-- Content -->
@@ -237,6 +251,8 @@
 						max="10"
 						step="0.1"
 						bind:value={formData.openness}
+						on:pointerdown={handleSliderFocus}
+						on:touchstart={handleSliderFocus}
 						class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-card accent-text"
 					/>
 					<div class="mt-1 flex justify-between text-xs text-text-muted">
@@ -260,6 +276,8 @@
 						max="10"
 						step="0.1"
 						bind:value={formData.conscientiousness}
+						on:pointerdown={handleSliderFocus}
+						on:touchstart={handleSliderFocus}
 						class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-card accent-text"
 					/>
 					<div class="mt-1 flex justify-between text-xs text-text-muted">
@@ -283,6 +301,8 @@
 						max="10"
 						step="0.1"
 						bind:value={formData.extraversion}
+						on:pointerdown={handleSliderFocus}
+						on:touchstart={handleSliderFocus}
 						class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-card accent-text"
 					/>
 					<div class="mt-1 flex justify-between text-xs text-text-muted">
@@ -306,6 +326,8 @@
 						max="10"
 						step="0.1"
 						bind:value={formData.agreeableness}
+						on:pointerdown={handleSliderFocus}
+						on:touchstart={handleSliderFocus}
 						class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-card accent-text"
 					/>
 					<div class="mt-1 flex justify-between text-xs text-text-muted">
@@ -329,6 +351,8 @@
 						max="10"
 						step="0.1"
 						bind:value={formData.neuroticism}
+						on:pointerdown={handleSliderFocus}
+						on:touchstart={handleSliderFocus}
 						class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-card accent-text"
 					/>
 					<div class="mt-1 flex justify-between text-xs text-text-muted">
@@ -362,6 +386,8 @@
 						max="10"
 						step="0.1"
 						bind:value={formData.intelligence}
+						on:pointerdown={handleSliderFocus}
+						on:touchstart={handleSliderFocus}
 						class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-card accent-text"
 					/>
 					<div class="mt-1 flex justify-between text-xs text-text-muted">
@@ -385,6 +411,8 @@
 						max="10"
 						step="0.1"
 						bind:value={formData.thinking_style}
+						on:pointerdown={handleSliderFocus}
+						on:touchstart={handleSliderFocus}
 						class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-card accent-text"
 					/>
 					<div class="mt-1 flex justify-between text-xs text-text-muted">
@@ -424,6 +452,8 @@
 						max="10"
 						step="0.1"
 						bind:value={formData.humor_level}
+						on:pointerdown={handleSliderFocus}
+						on:touchstart={handleSliderFocus}
 						class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-card accent-text"
 					/>
 					<div class="mt-1 flex justify-between text-xs text-text-muted">
@@ -449,6 +479,8 @@
 						max="10"
 						step="0.1"
 						bind:value={formData.mood_fluctuation}
+						on:pointerdown={handleSliderFocus}
+						on:touchstart={handleSliderFocus}
 						class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-card accent-text"
 					/>
 					<div class="mt-1 flex justify-between text-xs text-text-muted">
@@ -514,6 +546,8 @@
 						max="10"
 						step="0.1"
 						bind:value={formData.formality}
+						on:pointerdown={handleSliderFocus}
+						on:touchstart={handleSliderFocus}
 						class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-card accent-text"
 					/>
 					<div class="mt-1 flex justify-between text-xs text-text-muted">
@@ -586,10 +620,16 @@
 			<div class="flex justify-end border-t border-white/10 pt-6">
 				<button
 					on:click={handleSubmit}
-					disabled={!isFormValid}
-					class="rounded-lg bg-text px-6 py-3 font-medium text-background transition hover:bg-text/90 disabled:cursor-not-allowed disabled:opacity-50"
+					disabled={!isFormValid || isLoading}
+					class="inline-flex min-w-[140px] items-center justify-center gap-2 rounded-lg bg-text px-6 py-3 font-medium text-background transition hover:bg-text/90 disabled:cursor-not-allowed disabled:opacity-50"
 				>
-					Create Persona
+					{#if isLoading}
+						<div
+							class="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent"
+						></div>
+					{:else}
+						Create Persona
+					{/if}
 				</button>
 			</div>
 		</div>

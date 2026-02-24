@@ -5,10 +5,11 @@
 	export let startNewChat: (message: string) => void;
 	export let openChatSession: (sessionid: string) => void;
 	export let deleteChatSession: (sessionid: string) => void;
-	export let personaName;
+	export let personaName
+	export let isLoading: boolean;
 
 	let message = '';
- 
+
 	function handleNewChat() {
 		startNewChat(message);
 		message = '';
@@ -35,7 +36,7 @@
 
 <div class="flex h-dvh flex-col bg-background text-text lg:ml-72">
 	<!-- Header -->
-	<div class="border-b border-white/10 bg-card px-6 py-4 pl-16 lg:pl-6">
+	<div class="sticky top-0 z-10 border-b border-white/10 bg-card px-4 py-4 pl-16 sm:px-6 lg:pl-6">
 		<h2 class="truncate text-lg font-medium text-text">{personaName}</h2>
 	</div>
 
@@ -54,7 +55,13 @@
 					class="rounded-lg bg-text px-8 py-4 font-medium text-background transition hover:opacity-90"
 					on:click={handleNewChat}
 				>
-					Start Chat
+					{#if isLoading}
+						<div
+							class="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent"
+						></div>
+					{:else}
+						Start Chat
+					{/if}
 				</button>
 			</div>
 		</div>
@@ -146,7 +153,13 @@
 					class="rounded-lg bg-text px-5 py-3.5 text-sm font-medium text-background transition hover:opacity-90"
 					on:click={handleNewChat}
 				>
-					Start
+					{#if isLoading}
+						<div
+							class="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent"
+						></div>
+					{:else}
+						Start
+					{/if}
 				</button>
 			</div>
 		</div>

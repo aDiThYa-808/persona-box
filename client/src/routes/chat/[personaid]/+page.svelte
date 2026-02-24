@@ -12,10 +12,14 @@
 	$: chatSessions = data.chatSessions;
 	$: if (chatSessions) chats.set(chatSessions);
 
-	$: showConfirmModal = false;
-	$: deleteSessionId = '' // id of the session that has to be deleted
+	let showConfirmModal = false;
+	let deleteSessionId = '' // id of the session that has to be deleted
+
+	let createPersonaLoading = false
+	let createChatLoading = false
 
 	async function createPersona(data: PersonaData) {
+		createPersonaLoading = true
 		try {
 			const res = await fetch(`/api/personas`, {
 				method: 'POST',
@@ -42,10 +46,13 @@
 			});
 		} catch (err) {
 			console.log(err);
+		}finally{
+			createPersonaLoading = false
 		}
 	}
 
 	async function startNewChat(message: string) {
+		createChatLoading = true
 		goto(`/chat/${data.personaid}/new-chat`, {
 			replaceState: false,
 			noScroll: false,
@@ -91,9 +98,9 @@
 </script>
 
 {#if data.personaid == 'new-persona'}
-	<Create {createPersona} />
+	<Create {createPersona} isLoading= {createPersonaLoading}/>
 {:else}
-	<Chatlist {personaName} {startNewChat} {openChatSession} {deleteChatSession} />
+	<Chatlist {personaName} {startNewChat} {openChatSession} {deleteChatSession} isLoading = {createChatLoading} />
 {/if}
 
 <Modal 

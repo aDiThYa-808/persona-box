@@ -32,7 +32,7 @@ export async function POST(event: RequestEvent) {
 			throw error(500, data.error);
 		}
 
-		return new Response(JSON.stringify(data), { status: 200 });
+		return new Response(JSON.stringify(data), { status: res.status });
 	} catch (err) {
 		if (isHttpError(err)) {
 			console.log(err)

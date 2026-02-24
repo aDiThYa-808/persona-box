@@ -68,7 +68,7 @@
 			class="text-lg font-medium tracking-tight text-text"
 			style="font-family: 'Pixelify Sans', sans-serif;"
 		>
-			Persona Box
+			Personabox
 		</h1>
 		<button
 			on:click={() => (isOpen = false)}
@@ -204,7 +204,7 @@
 {#if !isOpen}
 	<button
 		on:click={() => (isOpen = true)}
-		class="fixed top-4 left-4 z-40 rounded-md border border-white/10 bg-card p-2 text-text transition-colors hover:bg-background lg:hidden"
+		class="fixed top-3 left-4 z-40 rounded-md border border-white/10 bg-card p-2 text-text transition-colors hover:bg-background lg:hidden"
 		aria-label="Open drawer"
 	>
 		<svg

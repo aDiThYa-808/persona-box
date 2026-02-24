@@ -14,6 +14,8 @@
 	$: chatName = $chats.find((c) => c.session_id === chatID)?.title || "New Chat";
 	$: title = personaName + ' - ' + chatName;
 
+	$: limitReached = false
+
 
 	$: sessionMessages = data.messages;
 	$: if(sessionMessages){
@@ -48,9 +50,16 @@
 				body: body
 			});
 
+			if (response.status === 429){
+				limitReached = true
+				messages.update((current) => current.slice(0, -1))
+				return
+			}
+
 			if (!response.ok) {
 				throw new Error(`HTTP error. Status: ${response.status}`);
 			}
+
 
 			const chatData: NewChatResponse = await response.json();
 
@@ -78,4 +87,4 @@
 	}
 </script>
 
-<Chat chatName={title} {sendPrompt} {loading} />
+<Chat chatName={title} {sendPrompt} {loading} {limitReached}/>
