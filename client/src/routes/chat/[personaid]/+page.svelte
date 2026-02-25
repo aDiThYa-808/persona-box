@@ -13,13 +13,13 @@
 	$: if (chatSessions) chats.set(chatSessions);
 
 	let showConfirmModal = false;
-	let deleteSessionId = '' // id of the session that has to be deleted
+	let deleteSessionId = ''; // id of the session that has to be deleted
 
-	let createPersonaLoading = false
-	let createChatLoading = false
+	let createPersonaLoading = false;
+	let createChatLoading = false;
 
 	async function createPersona(data: PersonaData) {
-		createPersonaLoading = true
+		createPersonaLoading = true;
 		try {
 			const res = await fetch(`/api/personas`, {
 				method: 'POST',
@@ -46,13 +46,13 @@
 			});
 		} catch (err) {
 			console.log(err);
-		}finally{
-			createPersonaLoading = false
+		} finally {
+			createPersonaLoading = false;
 		}
 	}
 
 	async function startNewChat(message: string) {
-		createChatLoading = true
+		createChatLoading = true;
 		goto(`/chat/${data.personaid}/new-chat`, {
 			replaceState: false,
 			noScroll: false,
@@ -70,13 +70,15 @@
 	}
 
 	function deleteChatSession(sessionid: string) {
-		deleteSessionId = sessionid
+		deleteSessionId = sessionid;
 		showConfirmModal = true;
 	}
 
 	async function confirmDelete() {
 		try {
-			const res = await fetch(`/api/sessions/${personaid}/${deleteSessionId}`, { method: 'DELETE' });
+			const res = await fetch(`/api/sessions/${personaid}/${deleteSessionId}`, {
+				method: 'DELETE'
+			});
 			const data = await res.json();
 			if (!res.ok) {
 				throw new Error(data);
@@ -85,25 +87,39 @@
 			chats.update((current) => current.filter((c) => c.session_id !== deleteSessionId));
 		} catch (err) {
 			console.log(err);
-		} finally{
-			deleteSessionId = ""
-			showConfirmModal = false
+		} finally {
+			deleteSessionId = '';
+			showConfirmModal = false;
 		}
 	}
 
-	function cancelDelete(){
-		deleteSessionId = ""
-		showConfirmModal = false
+	function cancelDelete() {
+		deleteSessionId = '';
+		showConfirmModal = false;
 	}
 </script>
 
+<svelte:head>
+	{#if data.personaid == 'new-persona'}
+		<title>Create a new persona</title>
+	{:else}
+		<title>{personaName}</title>
+	{/if}
+</svelte:head>
+
 {#if data.personaid == 'new-persona'}
-	<Create {createPersona} isLoading= {createPersonaLoading}/>
+	<Create {createPersona} isLoading={createPersonaLoading} />
 {:else}
-	<Chatlist {personaName} {startNewChat} {openChatSession} {deleteChatSession} isLoading = {createChatLoading} />
+	<Chatlist
+		{personaName}
+		{startNewChat}
+		{openChatSession}
+		{deleteChatSession}
+		isLoading={createChatLoading}
+	/>
 {/if}
 
-<Modal 
+<Modal
 	isOpen={showConfirmModal}
 	title="Confirm"
 	message="Are you sure you want to delete this chat session?"

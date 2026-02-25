@@ -87,4 +87,8 @@
 	}
 </script>
 
+<svelte:head>
+	<title>{title}</title>
+</svelte:head>
+
 <Chat chatName={title} {sendPrompt} {loading} {limitReached}/>
