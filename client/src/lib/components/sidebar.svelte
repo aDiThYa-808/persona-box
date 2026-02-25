@@ -5,8 +5,6 @@
 	import { personas } from '../../stores/store';
 	import Trash from '$lib/assets/icons/trash.png';
 	import Logout from '$lib/assets/icons/logout.png';
-	import Github from '$lib/assets/icons/github.png';
-	import BMAC from '$lib/assets/icons/bmac.png';
 
 	export let name: string;
 	export let email: string;
@@ -143,32 +141,6 @@
 				</div>
 			</div>
 		{/each}
-	</div>
-
-	<!-- support -->
-	<div class="border-t border-white/10 px-3 py-3">
-		<div class="px-3 py-2 text-xs font-medium text-text-muted">Support</div>
-		<div class="justify-left flex items-center gap-3 px-3">
-			<!-- GitHub Star -->
-			<a
-				href="https://github.com/aDiThYa-808/persona-box"
-				target="_blank"
-				rel="noopener noreferrer"
-				class="transition-opacity hover:opacity-80"
-			>
-				<img src={Github} alt="GitHub" class=" h-6 w-auto" />
-			</a>
-
-			<!-- Buy Me a Coffee -->
-			<a
-				href="https://www.buymeacoffee.com/adithyas"
-				target="_blank"
-				rel="noopener noreferrer"
-				class="transition-opacity hover:opacity-80"
-			>
-				<img src={BMAC} alt="Buy me a coffee" class="h-6 w-auto" />
-			</a>
-		</div>
 	</div>
 
 	<!-- User Section -->
