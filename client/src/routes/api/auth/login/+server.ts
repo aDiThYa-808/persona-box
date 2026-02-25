@@ -1,3 +1,11 @@
+/**
+ * Google OAuth authentication endpoint.
+ * Verifies Google ID token with backend, receives access token, and sets HTTP-only cookie.
+ * Cookie security adjusts based on environment (insecure for local dev).
+ * 
+ * @param event - SvelteKit request event containing Google ID token in body
+ * @returns Success response with cookie set, or error if authentication fails
+ */
 import type { RequestEvent } from "@sveltejs/kit";
 import { error, isHttpError} from "@sveltejs/kit";
 import { PUBLIC_AWS_INVOKE_URL } from "$env/static/public";

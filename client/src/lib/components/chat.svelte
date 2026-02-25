@@ -1,4 +1,14 @@
 <script lang="ts">
+	/**
+	 * Chat interface component with message display and input.
+	 * Auto-scrolls to bottom on new messages and handles message limits.
+	 *
+	 * @component
+	 * @prop {string} chatName - Display name shown in the header
+	 * @prop {boolean} loading - Shows typing indicator when true
+	 * @prop {boolean} limitReached - Disables input and shows limit warning
+	 * @prop {function} sendPrompt - Callback to send messages, receives prompt string
+	 */
 	import { messages } from '../../stores/store';
 	import { tick } from 'svelte';
 
@@ -6,7 +16,7 @@
 	export let loading: boolean;
 	export let limitReached: boolean;
 	export let sendPrompt: (prompt: string) => void;
-	
+
 	let prompt = '';
 	let messagesContainer: HTMLDivElement;
 
@@ -45,7 +55,7 @@
 			{#each $messages.sort((a, b) => a.created_at.localeCompare(b.created_at)) as msg, i (i)}
 				<div class="flex {msg.role === 'user' ? 'justify-end' : 'justify-start'} mb-4 sm:mb-6">
 					<div
-						class={`max-w-[90%] sm:max-w-[80%] break-words px-3 py-2 sm:px-4 sm:py-2.5 text-base sm:text-lg leading-relaxed ${
+						class={`max-w-[90%] px-3 py-2 text-base leading-relaxed break-words sm:max-w-[80%] sm:px-4 sm:py-2.5 sm:text-lg ${
 							msg.role === 'user' ? 'rounded-2xl bg-card text-text' : 'text-text'
 						}`}
 					>
@@ -55,7 +65,7 @@
 			{/each}
 			{#if loading}
 				<div class="mb-4 flex justify-start sm:mb-6">
-					<div class="px-1 py-2 text-base sm:text-lg text-text-muted">
+					<div class="px-1 py-2 text-base text-text-muted sm:text-lg">
 						<span class="inline-flex items-center gap-1">
 							<span class="animate-pulse">●</span>
 							<span class="animate-pulse delay-75">●</span>
@@ -71,7 +81,9 @@
 	<div class="sticky bottom-0 border-t border-white/10 bg-background px-4 py-3 sm:px-6 sm:py-4">
 		{#if limitReached}
 			<!-- Limit Reached Banner -->
-			<div class="mx-auto mb-3 max-w-3xl rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 sm:px-6">
+			<div
+				class="mx-auto mb-3 max-w-3xl rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 sm:px-6"
+			>
 				<div class="flex items-start gap-3">
 					<svg
 						class="mt-0.5 h-5 w-5 shrink-0 text-red-400"
@@ -85,7 +97,8 @@
 					<div class="flex-1 text-sm sm:text-base">
 						<p class="font-medium text-red-400">Chat limit reached</p>
 						<p class="mt-1 text-red-300/80">
-							You've reached the message limit for this conversation. Please create a new chat to continue.
+							You've reached the message limit for this conversation. Please create a new chat to
+							continue.
 						</p>
 					</div>
 				</div>
@@ -93,14 +106,16 @@
 		{/if}
 
 		<div
-			class="mx-auto flex max-w-3xl items-end gap-2 rounded-2xl border border-white/10 bg-card p-1.5 sm:p-2 shadow-lg {limitReached ? 'opacity-50' : ''}"
+			class="mx-auto flex max-w-3xl items-end gap-2 rounded-2xl border border-white/10 bg-card p-1.5 shadow-lg sm:p-2 {limitReached
+				? 'opacity-50'
+				: ''}"
 		>
 			<textarea
 				bind:value={prompt}
 				rows="1"
-				placeholder={limitReached ? "Chat limit reached..." : "Type a message..."}
+				placeholder={limitReached ? 'Chat limit reached...' : 'Type a message...'}
 				disabled={limitReached}
-				class="max-h-[200px] min-h-[44px] flex-1 resize-none border-0 bg-transparent px-3 py-2 sm:py-2.5 text-base sm:text-lg text-text placeholder-text-muted focus:ring-0 focus:outline-none disabled:cursor-not-allowed"
+				class="max-h-[200px] min-h-[44px] flex-1 resize-none border-0 bg-transparent px-3 py-2 text-base text-text placeholder-text-muted focus:ring-0 focus:outline-none disabled:cursor-not-allowed sm:py-2.5 sm:text-lg"
 				style="overflow-y: auto; field-sizing: content;"
 				on:input={(e) => {
 					e.currentTarget.style.height = 'auto';
@@ -110,7 +125,7 @@
 			></textarea>
 			<button
 				on:click={handleSend}
-				class="shrink-0 rounded-lg bg-text p-2 sm:p-2.5 text-background transition hover:bg-text/90 disabled:cursor-not-allowed disabled:opacity-50"
+				class="shrink-0 rounded-lg bg-text p-2 text-background transition hover:bg-text/90 disabled:cursor-not-allowed disabled:opacity-50 sm:p-2.5"
 				disabled={loading || !prompt.trim() || limitReached}
 				aria-label="Send message"
 			>

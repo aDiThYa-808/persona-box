@@ -1,4 +1,15 @@
 <script lang="ts">
+	/**
+	 * Sidebar navigation drawer with persona list and user profile.
+	 * Auto-opens on desktop (lg breakpoint), toggleable on mobile with overlay.
+	 * Handles persona navigation and deletion.
+	 *
+	 * @component
+	 * @prop {string} name - User's display name
+	 * @prop {string} email - User's email address
+	 * @prop {function} deletePersona - Deletes a persona
+	 * @prop {function} logout - Logs out the current user
+	 */
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { onMount } from 'svelte';
@@ -47,7 +58,7 @@
 <!-- Overlay for mobile -->
 {#if isOpen}
 	<button
-		class="fixed inset-0 z-40 bg-black/25 lg:hidden backdrop-blur-sm"
+		class="fixed inset-0 z-40 bg-black/25 backdrop-blur-sm lg:hidden"
 		on:click={() => (isOpen = false)}
 		tabindex="-1"
 		aria-label="Close drawer"

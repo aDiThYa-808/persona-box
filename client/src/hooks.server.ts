@@ -1,3 +1,12 @@
+/**
+ * SvelteKit hooks for JWT-based authentication.
+ * Verifies access token from cookies on every request and populates event.locals.user.
+ * Clears invalid/expired tokens automatically.
+ *
+ * @param event - SvelteKit request event
+ * @param resolve - SvelteKit resolve function
+ * @returns Resolved response with user attached to locals if authenticated
+ */
 import { error, type Handle } from '@sveltejs/kit';
 import { jwtVerify } from 'jose';
 import { PERSONABOX_SECRET } from '$env/static/private';

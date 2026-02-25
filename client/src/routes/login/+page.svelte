@@ -1,4 +1,11 @@
 <script lang="ts">
+	/**
+	 * Google OAuth sign-in page.
+	 * Renders Google Sign-In button, handles authentication, and redirects to new persona page.
+	 * Shows loading state during authentication process.
+	 *
+	 * Initializes Google OAuth on mount and handles ID token verification through /api/auth/login.
+	 */
 	import { goto } from '$app/navigation';
 	import { PUBLIC_GOOGLE_CLIENT_ID } from '$env/static/public';
 	import { error } from '@sveltejs/kit';
@@ -14,11 +21,11 @@
 		});
 
 		window.google.accounts.id.renderButton(document.getElementById('googleSignIn')!, {
-			theme: 'filled_blue', 
+			theme: 'filled_blue',
 			size: 'large',
-			width: 250, 
-			text: 'continue_with', 
-			shape: 'square', 
+			width: 250,
+			text: 'continue_with',
+			shape: 'square',
 			logo_alignment: 'left'
 		});
 	});

@@ -1,4 +1,13 @@
 <script lang="ts">
+	/**
+	 * Persona creation form with Big Five personality traits and customization options.
+	 * Validates all required fields and formats data before submission.
+	 * Blurs text inputs when sliders are interacted with to prevent mobile keyboard issues.
+	 *
+	 * @component
+	 * @prop {function} createPersona - Submits persona data
+	 * @prop {boolean} isLoading - Shows spinner in submit button when true
+	 */
 	import type { PersonaData, TraitInfo } from '$lib/types/persona';
 
 	export let createPersona: (data: PersonaData) => void;

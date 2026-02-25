@@ -1,11 +1,23 @@
 <script lang="ts">
+	/**
+	 * Chat list and new chat starter component.
+	 * Displays recent chat sessions with relative timestamps and handles new chat creation.
+	 * Shows desktop and mobile layouts with different input positioning.
+	 *
+	 * @component
+	 * @prop {function} startNewChat - Creates a new chat session
+	 * @prop {function} openChatSession - Opens existing chat
+	 * @prop {function} deleteChatSession - Deletes a chat
+	 * @prop {string} personaName - Persona name displayed in header
+	 * @prop {boolean} isLoading - Shows spinner in start button when true
+	 */
 	import { chats } from '../../stores/store';
 	import Trash from '$lib/assets/icons/trash.png';
 
 	export let startNewChat: (message: string) => void;
 	export let openChatSession: (sessionid: string) => void;
 	export let deleteChatSession: (sessionid: string) => void;
-	export let personaName
+	export let personaName;
 	export let isLoading: boolean;
 
 	let message = '';
