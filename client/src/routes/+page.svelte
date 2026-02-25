@@ -19,6 +19,7 @@
 		href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@600&display=swap"
 		rel="stylesheet"
 	/>
+	<title>Personabox - Personality-Driven AI Chat</title>
 </svelte:head>
 
 <div class="flex min-h-screen overflow-x-hidden bg-background text-text">
@@ -65,55 +66,93 @@
 				href="/"
 				class="text-xl font-semibold tracking-tight"
 				style="font-family: 'Pixelify Sans', sans-serif;"
+				on:click={closeDrawer}
 			>
 				Personabox
 			</a>
 		</div>
 
 		<!-- Navigation Links -->
-		<div class="flex flex-1 flex-col px-8 py-12">
+		<div class="flex flex-1 flex-col justify-between px-8 py-12">
 			<ul class="space-y-5">
 				<li>
 					<a
-						href="#science"
+						href="/#science"
 						class="block text-[15px] font-medium text-text-muted transition-colors hover:text-text"
+						on:click={closeDrawer}
 					>
 						The Science
 					</a>
 				</li>
 				<li>
 					<a
-						href="#product"
+						href="/#product"
 						class="block text-[15px] font-medium text-text-muted transition-colors hover:text-text"
+						on:click={closeDrawer}
 					>
 						Product
 					</a>
 				</li>
 				<li>
 					<a
-						href="#how-it-works"
+						href="/#how-it-works"
 						class="block text-[15px] font-medium text-text-muted transition-colors hover:text-text"
+						on:click={closeDrawer}
 					>
 						How It Works
 					</a>
 				</li>
 				<li>
 					<a
-						href="#for-writers"
+						href="/#for-writers"
 						class="block text-[15px] font-medium text-text-muted transition-colors hover:text-text"
+						on:click={closeDrawer}
 					>
 						For Writers
 					</a>
 				</li>
 				<li>
 					<a
-						href="#other-uses"
+						href="/#other-uses"
 						class="block text-[15px] font-medium text-text-muted transition-colors hover:text-text"
+						on:click={closeDrawer}
 					>
 						Other Uses
 					</a>
 				</li>
+				<li>
+					<a
+						href="/privacy"
+						class="block text-[15px] font-medium text-text-muted transition-colors hover:text-text"
+						on:click={closeDrawer}
+					>
+						Privacy Policy
+					</a>
+				</li>
+				<li>
+					<a
+						href="/terms"
+						class="block text-[15px] font-medium text-text-muted transition-colors hover:text-text"
+						on:click={closeDrawer}
+					>
+						Terms of Use
+					</a>
+				</li>
 			</ul>
+
+			<div class="mt-8 pt-6">
+				<p class="text-sm text-text-muted">
+					Built by
+					<a
+						href="https://www.linkedin.com/in/adithya-s-088272287/"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="transition-colors hover:text-text"
+					>
+						S. Adithya
+					</a>
+				</p>
+			</div>
 		</div>
 	</nav>
 
@@ -804,8 +843,9 @@
 					<a href="/privacy" class="font-medium text-text-muted transition-colors hover:text-text"
 						>Privacy</a
 					>
-					<a href="/contact" class="font-medium text-text-muted transition-colors hover:text-text"
-						>Contact</a
+					<a
+						href="mailto:contactadiiiii@gmail.com"
+						class="font-medium text-text-muted transition-colors hover:text-text">Contact</a
 					>
 				</div>
 			</div>
