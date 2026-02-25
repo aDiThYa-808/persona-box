@@ -1,8 +1,13 @@
 package models
 
+// Model for Persona Table
 type Persona struct {
-	PersonaID          string   `json:"persona_id"` //SK
-	UserID             string   `json:"user_id"`    //PK
+	//PersonaID is the SORT KEY of Persona table
+	PersonaID string `json:"persona_id"`
+
+	//UserID is the PARTITION KEY of Persona table
+	UserID string `json:"user_id"`
+
 	PersonaName        string   `json:"name"`
 	PersonaDescription string   `json:"description"`
 	Age                int      `json:"age"`
@@ -23,11 +28,16 @@ type Persona struct {
 	Fluency            string   `json:"fluency"`
 	EmojiUsage         string   `json:"emoji_usage"`
 	ResponseLength     string   `json:"response_length"`
-	CreatedAt          string   `json:"created_at"`
+
+	//CreatedAt must be an ISO string. Format: RFC3339
+	CreatedAt string `json:"created_at"`
 }
 
+// Type PersonaList is a subset of Type Persona, safe for API response
 type PersonaList struct {
 	PersonaID   string `json:"persona_id"`
 	PersonaName string `json:"name"`
-	CreatedAt   string `json:"created_at"`
+
+	//CreatedAt must be an ISO string. Format: RFC3339
+	CreatedAt string `json:"created_at"`
 }

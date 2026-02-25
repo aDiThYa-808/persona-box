@@ -7,6 +7,7 @@ import (
 	"github.com/openai/openai-go/v3"
 )
 
+// Takes user prompt and return assistant response along with tokens used
 func Chat(ctx context.Context, systemMessage string, history []models.ChatMessage, userMessage string) (responseMessage string, tokensUsed int64, error error) {
 	msgs := []openai.ChatCompletionMessageParamUnion{
 		openai.SystemMessage(systemMessage),
@@ -38,6 +39,7 @@ func Chat(ctx context.Context, systemMessage string, history []models.ChatMessag
 	return chatCompletion.Choices[0].Message.Content, tokens, nil
 }
 
+// Generates title and summary for a chat session
 func GenerateTitleAndSummary(ctx context.Context, messages []models.ChatMessage) (chatTitle string, chatSummary string, error error) {
 
 	titleSystemPrompt := `You are a title generator. Analyze the conversation and create a concise, descriptive title that captures the main topic or purpose of the discussion. The title should be 3-6 words long. Output ONLY the title text itself - no quotation marks, no preamble like "Title:", no explanations, and no additional text.`

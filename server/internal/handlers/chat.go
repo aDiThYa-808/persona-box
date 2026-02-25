@@ -74,6 +74,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 		messages     []models.ChatMessage
 	)
 
+	// if sessionid was not provided by the client, it means a new chat session must be created
 	if req.SessionID == "" {
 		isNewSession = true
 		sessionID = uuid.New().String()

@@ -6,6 +6,7 @@ import (
 	"github.com/aDiThYa-808/persona-box/internal/dynamodbx/models"
 )
 
+// Creates a system prompt describing the persona
 func CreateSystemPrompt(persona models.Persona) (systemPrompt string) {
 	prompt := fmt.Sprintf(`You are an AI assistant embodying the persona described below. Always respond as this persona would.
 

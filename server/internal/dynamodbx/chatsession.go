@@ -14,7 +14,6 @@ import (
 
 /*
 Creates a new item in the ChatSession table if it doesnt already exist.
-Returns error if it fails to create the item.
 */
 func CreateNewChatSession(ctx context.Context, session models.ChatSession) error {
 	putParams := &dynamodb.PutItemInput{
@@ -70,6 +69,7 @@ func GetChatSessionByID(ctx context.Context, personaID string, sessionID string)
 	return session, nil
 }
 
+// Returns all the chat sessions of a persona
 func GetAllChatSessionsOfPersona(ctx context.Context, personaid string) ([]models.ChatSessionList, error) {
 	queryParams := &dynamodb.QueryInput{
 		TableName:              aws.String("ChatSession"),
@@ -100,7 +100,6 @@ func GetAllChatSessionsOfPersona(ctx context.Context, personaid string) ([]model
 
 /*
 Updates 'UpdatedAt', 'MessageCount' and 'TokenCount' of the ChatSession item with the provided SessionID.
-Returns an error if update fails.
 */
 func UpdateSessionMessageAndTokenCount(ctx context.Context, personaID string, sessionID string, updatedAt string, messageCount int, tokensUsed int) error {
 	updateExpression := "SET UpdatedAt = :now ADD MessageCount :msgcount, TokenCount :tkncount"
@@ -129,6 +128,7 @@ func UpdateSessionMessageAndTokenCount(ctx context.Context, personaID string, se
 	return nil
 }
 
+// Updates title and summary of a chat session
 func UpdateTitleAndSummary(ctx context.Context, personaID string, sessionID string, title string, summary string) error {
 	updateParams := &dynamodb.UpdateItemInput{
 		TableName: aws.String("ChatSession"),
@@ -151,6 +151,7 @@ func UpdateTitleAndSummary(ctx context.Context, personaID string, sessionID stri
 	return nil
 }
 
+// Deletes a chat session and all its messages
 func DeleteSession(ctx context.Context, personaid string, sessionid string) error {
 	deleteMsgErr := DeleteAllMessagesOfASession(ctx, sessionid)
 	if deleteMsgErr != nil {
@@ -173,6 +174,7 @@ func DeleteSession(ctx context.Context, personaid string, sessionid string) erro
 	return nil
 }
 
+// Deletes all the chat sessions of a persona
 func DeleteAllSessionsOfAPersona(ctx context.Context, personaid string) error {
 	queryParams := &dynamodb.QueryInput{
 		TableName:              aws.String("ChatSession"),

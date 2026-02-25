@@ -13,8 +13,7 @@ import (
 )
 
 /*
-Creates a new item in the Persona table using PutItem().
-Returns error if PutItem() fails.
+Creates a new persona in the Persona table
 */
 func CreateNewPersona(ctx context.Context, persona models.Persona) error {
 	putParams := &dynamodb.PutItemInput{
@@ -56,8 +55,7 @@ func CreateNewPersona(ctx context.Context, persona models.Persona) error {
 }
 
 /*
-Returns all the items from Persona table that has the same partition key value as the provided userID using Query().
-Returns error if query fails.
+Returns all the items from Persona table that has the same partition key value as the provided userID.
 */
 func GetUsersPersonas(ctx context.Context, userID string) ([]models.PersonaList, error) {
 	queryParams := &dynamodb.QueryInput{
@@ -114,6 +112,7 @@ func GetPersonaByPersonaID(ctx context.Context, userID string, personaID string)
 	return persona, nil
 }
 
+// Deletes a persona, its chat sessions and all the messages.
 func DeletePersona(ctx context.Context, userid string, personaid string) error {
 
 	//delete all chat session of a the persona

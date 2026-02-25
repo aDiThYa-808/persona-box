@@ -12,10 +12,9 @@ import (
 )
 
 /*
-Creates a new item in the User table using PutItem().
+Creates a new user in the User table.
 Returns created = true if item is added successfully.
 Returns created = false if item already exists with the same user.UserID.
-Returns error if PutItem() fails.
 */
 func CreateNewUser(ctx context.Context, user models.User) (created bool, error error) {
 
@@ -47,9 +46,7 @@ func CreateNewUser(ctx context.Context, user models.User) (created bool, error e
 }
 
 /*
-Gets the item from User table that has the same partition key value as the provided userID using GetItem().
-Return user if it is found.
-Returns error if the item doesnt exist or GetItem() fails.
+Gets the item from User table that has the same partition key value as the provided userID.
 */
 func GetUser(ctx context.Context, userID string) (user models.User, error error) {
 	getParams := &dynamodb.GetItemInput{

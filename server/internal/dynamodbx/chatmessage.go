@@ -11,6 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
+// Stores messages in the ChatMessage table
 func StoreChatMessage(ctx context.Context, message models.ChatMessage) error {
 	putParams := &dynamodb.PutItemInput{
 		TableName: aws.String("ChatMessage"),
@@ -31,6 +32,7 @@ func StoreChatMessage(ctx context.Context, message models.ChatMessage) error {
 	return nil
 }
 
+// Retrives all the messages of a chat session
 func GetAllSessionMessages(ctx context.Context, sessionid string) ([]models.ChatMessage, error) {
 	queryParams := &dynamodb.QueryInput{
 		TableName:              aws.String("ChatMessage"),
@@ -61,6 +63,7 @@ func GetAllSessionMessages(ctx context.Context, sessionid string) ([]models.Chat
 	return messages, nil
 }
 
+// Deletes all the messages of a chat session
 func DeleteAllMessagesOfASession(ctx context.Context, sessionid string) error {
 
 	queryParams := &dynamodb.QueryInput{
