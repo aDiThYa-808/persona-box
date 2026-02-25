@@ -5,6 +5,7 @@
 	import { onMount } from 'svelte';
 
 	const clientId = PUBLIC_GOOGLE_CLIENT_ID;
+	let isLoading = false;
 
 	onMount(() => {
 		window.google.accounts.id.initialize({
@@ -13,8 +14,12 @@
 		});
 
 		window.google.accounts.id.renderButton(document.getElementById('googleSignIn')!, {
-			theme: 'outline',
-			size: 'large'
+			theme: 'filled_blue', 
+			size: 'large',
+			width: 250, 
+			text: 'continue_with', 
+			shape: 'square', 
+			logo_alignment: 'left'
 		});
 	});
 
@@ -24,6 +29,7 @@
 	}
 
 	async function verifyJWT(jwt: string) {
+		isLoading = true;
 		try {
 			const response = await fetch(`/api/auth/login`, {
 				method: 'POST',
@@ -45,6 +51,8 @@
 			});
 		} catch (err: unknown) {
 			console.log((err as Error).message);
+		} finally {
+			isLoading = false;
 		}
 	}
 </script>
@@ -56,30 +64,75 @@
 		href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap"
 		rel="stylesheet"
 	/>
+	<title>Sign in - Personabox</title>
 </svelte:head>
 
 <div class="flex min-h-screen flex-col bg-background text-text">
-	<header class="px-8 py-6">
+	<!-- Header -->
+	<header class="px-8 py-8">
 		<a
 			href="/"
-			class="text-lg font-medium tracking-tight transition-opacity hover:opacity-80"
+			class="text-xl font-semibold tracking-tight transition-opacity hover:opacity-80"
 			style="font-family: 'Pixelify Sans', sans-serif;"
 		>
 			Personabox
 		</a>
 	</header>
-	<main class="flex flex-1 items-center justify-center px-8">
-		<div class="w-full max-w-sm">
-			<div class="mb-8 text-center">
-				<h1 class="mb-2 text-3xl font-semibold">Welcome back</h1>
-				<p class="text-sm text-text-muted">Sign in to continue to PersonaBox</p>
+
+	<!-- Main Content -->
+	<main class="flex flex-1 items-center justify-center px-6 py-12">
+		<div class="w-full max-w-md">
+			<!-- Header Text -->
+			<div class="mb-10 text-center">
+				<h1 class="mb-3 text-3xl font-bold tracking-tight md:text-4xl">Welcome back</h1>
+				<p class="text-sm text-text-muted">
+					{isLoading ? 'Signing you in...' : 'Sign in to create and chat with AI personas'}
+				</p>
 			</div>
-			<div class="rounded-xl border border-white/10 bg-card p-8">
-				<div id="googleSignIn" class="flex justify-center"></div>
+
+			<!-- Sign In Card -->
+			<div class="rounded-lg border border-white/10 bg-card p-10 shadow-2xl shadow-black/10">
+				{#if isLoading}
+					<!-- Loading State -->
+					<div class="flex flex-col items-center justify-center py-4">
+						<div
+							class="mb-3 h-10 w-10 animate-spin rounded-full border-4 border-white/10 border-t-text"
+						></div>
+						<p class="text-sm text-text-muted">Signing in...</p>
+					</div>
+				{:else}
+					<!-- Google Sign In Button -->
+					<div id="googleSignIn" class="flex justify-center"></div>
+				{/if}
 			</div>
-			<p class="mt-6 text-center text-xs text-white/40">
-				By continuing, you agree to our Terms of Service and Privacy Policy
+
+			<!-- Terms Notice -->
+			<p class="mt-8 text-center text-sm leading-relaxed text-text-muted">
+				By continuing, you agree to our
+				<a href="/terms" class="underline transition-colors hover:text-text">Terms of Service</a>
+				and
+				<a href="/privacy" class="underline transition-colors hover:text-text">Privacy Policy</a>
 			</p>
 		</div>
 	</main>
+
+	<!-- Footer -->
+	<footer class="border-t border-white/10 px-8 py-8">
+		<div
+			class="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-4 text-center sm:flex-row sm:text-left"
+		>
+			<p class="text-sm text-text-muted">© 2024 PersonaBox</p>
+			<div class="flex gap-6 text-sm">
+				<a href="/terms" class="font-medium text-text-muted transition-colors hover:text-text"
+					>Terms</a
+				>
+				<a href="/privacy" class="font-medium text-text-muted transition-colors hover:text-text"
+					>Privacy</a
+				>
+				<a href="/contact" class="font-medium text-text-muted transition-colors hover:text-text"
+					>Contact</a
+				>
+			</div>
+		</div>
+	</footer>
 </div>
